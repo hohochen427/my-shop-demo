@@ -1,0 +1,29 @@
+{
+  "name": "jam-shop-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "小島果醬：「不會寫程式，也能讓 AI 幫你開一間店」課程範本",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:setup": "node --env-file-if-exists=.env.local scripts/db-setup.mjs",
+    "simulate:paid": "node --env-file-if-exists=.env.local scripts/simulate-notify.mjs"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "dependencies": {
+    "next": "^16.4.3",
+    "pg": "^8.23.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^5.9.3"
+  }
+}

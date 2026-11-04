@@ -1,0 +1,18 @@
+# 套件
+/node_modules
+
+# Next.js 建置產物
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# 鑰匙：所有 .env 開頭的檔案都不上傳，只有 .env.example 例外
+.env*
+!.env.example
+
+# 系統檔
+.DS_Store
+Thumbs.db
+npm-debug.log*
+/.vercel
