@@ -1,6 +1,6 @@
 // 店的基本設定。改店名、標語、運費，都在這個檔案。
 export const SHOP = {
-  name: "小島果醬",
+  name: "(  HenHen日初 shop)",
   tagline: "小農水果，小鍋慢熬，一罐一罐裝進你家的早餐桌。",
   shippingFee: 80,
   freeShippingOver: 1000,
