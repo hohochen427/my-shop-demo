@@ -16,8 +16,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a className="skip" href="#main">跳到主要內容</a>
         <header className="site-head">
           <div className="wrap">
-            <Link href="/" className="brand">{SHOP.name}</Link>
+            <Link href="/" className="brand">
+              {/* 頁首只放店主的 RC logo（public/logo-rc.webp），不放店名文字；alt 讓螢幕報讀念得出這是回首頁 */}
+              <img src="/logo-rc.webp" alt="HenHen日初 首頁" width={211} height={160} className="brand-logo" />
+            </Link>
             <div className="head-actions">
+              <Link href="/about" className="island-link">關於我們</Link>
               <a href={SHOP.islandUrl} className="island-link" aria-label="回小島" title="回小島">
                 {/* 小島圖示：沙丘＋椰子樹＋海浪，用文字色畫，不依賴表情符號字型 */}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

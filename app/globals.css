@@ -52,7 +52,12 @@ h1, h2, h3 { line-height: 1.35; margin: 0 0 0.5em; }
   .island-text { display: none; }
   .island-link { padding: 8px 12px; min-width: 44px; justify-content: center; }
   .site-head .brand { font-size: 1.1rem; white-space: nowrap; min-width: 0; }
+  .site-head .brand-logo { height: 28px; }
+  /* 頁首有三顆按鈕（關於我們、回小島、購物車），放不下就換到第二行，不要蓋住店名 */
+  .site-head .wrap { flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
 }
+/* 店主的 RC logo，放在店名前面 */
+.brand-logo { height: 36px; width: auto; flex: none; }
 .cart-link .count { background: var(--accent); color: var(--accent-ink); border-radius: 999px; padding: 0 8px; font-size: 0.85rem; min-width: 24px; text-align: center; }
 
 /* 首頁主視覺 */
