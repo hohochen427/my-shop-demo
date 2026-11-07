@@ -1,5 +1,25 @@
-// 原創的果醬罐插圖，顏色依商品而不同
-export default function JarArt({ color, label, size = 320 }: { color: string; label: string; size?: number }) {
+import Image from "next/image";
+
+// 商品圖：有店主用 Grok 產生的示意照片（public/jams/jam-<slug>.jpg）就用照片，
+// 沒有照片的商品才用原創的果醬罐插圖（顏色依商品而不同）。
+// 照片是 AI 示意圖、非實拍：商品頁會另外標示。
+export const JAM_PHOTOS = new Set(["strawberry", "mango-passion", "blueberry", "pomelo-lemon", "roselle", "fig"]);
+
+export default function JarArt({ color, label, slug, size = 320 }: { color: string; label: string; slug?: string; size?: number }) {
+  if (slug && JAM_PHOTOS.has(slug)) {
+    return (
+      <Image
+        className="jar jar-photo"
+        src={`/jams/jam-${slug}.jpg`}
+        alt={`${label}（AI 示意圖）`}
+        width={1792}
+        height={1008}
+        // 卡片和商品頁都是 4:3 的框，照片置中裁切；購物車縮圖只要 64px
+        sizes={size <= 64 ? "64px" : "(max-width: 720px) 100vw, 540px"}
+        style={size <= 64 ? { width: size, height: size } : undefined}
+      />
+    );
+  }
   return (
     <svg className="jar" viewBox="0 0 320 240" width={size} role="img" aria-label={`${label}的果醬罐插圖`}>
       <rect x="0" y="0" width="320" height="240" fill="#fbe7d6" />

@@ -149,7 +149,7 @@ export default function CartView({ shippingFee, freeOver }: { shippingFee: numbe
             const p = products[l.productId];
             return (
               <div className="line" key={l.productId}>
-                <JarArt color={p.color} label={p.name} size={64} />
+                <JarArt color={p.color} label={p.name} slug={p.slug} size={64} />
                 <div>
                   <Link href={`/products/${p.slug}`}><b>{p.name}</b></Link>
                   <div className="meta">

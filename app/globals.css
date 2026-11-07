@@ -78,7 +78,10 @@ h1, h2, h3 { line-height: 1.35; margin: 0 0 0.5em; }
 .jar { display: block; width: 100%; height: auto; }
 
 .detail { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; padding: 32px 0 56px; align-items: start; }
-.detail .art { background: var(--accent-soft); border-radius: var(--radius); }
+.detail .art { background: var(--accent-soft); border-radius: var(--radius); overflow: hidden; }
+/* Grok 示意照片：跟原本插圖一樣是 4:3 的框，照片置中裁切；購物車縮圖是正方形（尺寸由元件設定） */
+.jar-photo { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+.line .jar-photo { aspect-ratio: 1 / 1; border-radius: 8px; }
 @media (max-width: 720px) { .detail { grid-template-columns: 1fr; } }
 
 /* 按鈕與表單 */

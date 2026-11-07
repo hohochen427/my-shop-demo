@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AddToCart from "@/components/AddToCart";
-import JarArt from "@/components/JarArt";
+import JarArt, { JAM_PHOTOS } from "@/components/JarArt";
 import SetupNotice, { dbErrorReason } from "@/components/SetupNotice";
 import { getProductBySlug, type Product } from "@/lib/products";
 import { formatNT } from "@/lib/shop";
@@ -22,7 +22,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     <>
       <p style={{ marginTop: 24 }}><Link href="/">← 回到所有商品</Link></p>
       <div className="detail">
-        <div className="art"><JarArt color={p.color} label={p.name} /></div>
+        <div>
+          <div className="art"><JarArt color={p.color} label={p.name} slug={p.slug} /></div>
+          {JAM_PHOTOS.has(p.slug) && <p className="hint" style={{ marginTop: 8 }}>AI 示意圖，實際商品以收到為準。</p>}
+        </div>
         <div>
           <h1>{p.name}</h1>
           <p className="price" style={{ fontSize: "1.4rem" }}>{formatNT(p.price)}</p>

@@ -28,7 +28,7 @@ export default async function Home() {
           {products.map((p) => (
             <article key={p.id} className="card">
               <Link href={`/products/${p.slug}`} className="cover" tabIndex={-1} aria-hidden="true">
-                <JarArt color={p.color} label={p.name} />
+                <JarArt color={p.color} label={p.name} slug={p.slug} />
               </Link>
               <div className="body">
                 <h2><Link href={`/products/${p.slug}`}>{p.name}</Link></h2>
