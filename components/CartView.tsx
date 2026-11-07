@@ -18,6 +18,8 @@ export default function CartView({ shippingFee, freeOver }: { shippingFee: numbe
   const [applied, setApplied] = useState<{ code: string; discount: number } | null>(null);
   const [couponMsg, setCouponMsg] = useState("");
   const [checking, setChecking] = useState(false);
+  // 清空購物車：先問一次，避免誤按（用畫面上的確認，不跳瀏覽器視窗）
+  const [confirmClear, setConfirmClear] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -129,7 +131,18 @@ export default function CartView({ shippingFee, freeOver }: { shippingFee: numbe
 
   return (
     <>
-      <h1 style={{ marginTop: 32 }}>購物車</h1>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginTop: 32 }}>
+        <h1 style={{ margin: 0 }}>購物車</h1>
+        {confirmClear ? (
+          <div role="group" aria-label="確認清空購物車" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <span>確定要清空購物車嗎？</span>
+            <button type="button" className="btn" onClick={() => { setConfirmClear(false); update([]); }}>清空</button>
+            <button type="button" className="btn ghost" onClick={() => setConfirmClear(false)}>取消</button>
+          </div>
+        ) : (
+          <button type="button" className="btn ghost" onClick={() => setConfirmClear(true)}>清空購物車</button>
+        )}
+      </div>
       <div className="cart-layout">
         <section className="panel" aria-label="購物車內容">
           {shown.map((l) => {
