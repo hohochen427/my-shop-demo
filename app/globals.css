@@ -43,6 +43,16 @@ h1, h2, h3 { line-height: 1.35; margin: 0 0 0.5em; }
 .site-head .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 64px; }
 .brand { font-size: 1.3rem; font-weight: 800; color: var(--ink); text-decoration: none; display: flex; align-items: center; gap: 8px; }
 .cart-link { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; text-decoration: none; padding: 8px 14px; border: 1.5px solid var(--accent); border-radius: 999px; min-height: 44px; }
+.head-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.island-link { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; text-decoration: none; padding: 8px 14px; border: 1.5px solid var(--accent); border-radius: 999px; min-height: 44px; white-space: nowrap; }
+.island-link:hover, .cart-link:hover { background: var(--accent-soft); }
+.cart-link { white-space: nowrap; }
+/* 很窄的手機：「回小島」只留圖示，讓店名保持一行；按鈕名稱仍由 aria-label 提供 */
+@media (max-width: 420px) {
+  .island-text { display: none; }
+  .island-link { padding: 8px 12px; min-width: 44px; justify-content: center; }
+  .site-head .brand { font-size: 1.1rem; white-space: nowrap; min-width: 0; }
+}
 .cart-link .count { background: var(--accent); color: var(--accent-ink); border-radius: 999px; padding: 0 8px; font-size: 0.85rem; min-width: 24px; text-align: center; }
 
 /* 首頁主視覺 */
