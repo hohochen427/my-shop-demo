@@ -30,6 +30,13 @@ export async function changeStatus(formData: FormData) {
     const blocked = to === "cancelled" && o?.payment_status === "paid";
     if (allowed && !blocked) {
       await client.query("UPDATE orders SET status = $2 WHERE id = $1", [id, to]);
+      // 取消訂單時退回優惠碼名額：只蓋上退回時間，不刪紀錄（T03）
+      if (to === "cancelled") {
+        await client.query(
+          "UPDATE coupon_redemptions SET released_at = now() WHERE order_id = $1 AND released_at IS NULL",
+          [id]
+        );
+      }
     }
     await client.query("COMMIT");
   } catch (e) {
