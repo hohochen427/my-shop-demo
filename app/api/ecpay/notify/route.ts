@@ -90,7 +90,25 @@ export async function POST(req: Request) {
            WHERE id = $1`,
           [order.id]
         );
-        // 確定收到錢，才扣庫存
+        // 下單時沒有預留庫存，兩個人可能先後付了最後一罐的錢。
+        // 扣之前先鎖住商品看夠不夠；不夠就留言給店家，接在原本的提醒後面，不蓋掉。
+        const { rows: lines } = await client.query(
+          `SELECT p.name, p.stock, oi.quantity
+           FROM order_items oi JOIN products p ON p.id = oi.product_id
+           WHERE oi.order_id = $1 FOR UPDATE OF p`,
+          [order.id]
+        );
+        const short = lines.filter((l: { stock: number; quantity: number }) => l.stock < l.quantity);
+        if (short.length > 0) {
+          const detail = short
+            .map((l: { name: string; stock: number; quantity: number }) => `「${l.name}」要 ${l.quantity} 罐、付款時只剩 ${l.stock} 罐`)
+            .join("、");
+          await client.query("UPDATE orders SET review_note = concat_ws('；', review_note, $2::text) WHERE id = $1", [
+            order.id,
+            `庫存不足：${detail}，請聯絡客人補貨或退款`,
+          ]);
+        }
+        // 確定收到錢，才扣庫存（不夠的部分扣到 0，上面已經留言給店家）
         await client.query(
           `UPDATE products p SET stock = GREATEST(p.stock - oi.quantity, 0)
            FROM order_items oi WHERE oi.order_id = $1 AND oi.product_id = p.id`,
