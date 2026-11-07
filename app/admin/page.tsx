@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: `店家後台｜${SHOP.name}`, robots
 
 type Row = {
   id: number; status: string; payment_status: string; total: number; review_note: string | null;
-  created_at: Date; name: string; email: string; items: string;
+  created_at: Date; name: string; email: string; phone: string; address: string; legacy: boolean; items: string;
 };
 
 export default async function Admin({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
@@ -54,10 +54,15 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
     revenue = r.rows[0].revenue;
     paidCount = r.rows[0].n;
     orders = (await db().query(`
-      SELECT o.id, o.status, o.payment_status, o.total, o.review_note, o.created_at, c.name, c.email,
+      SELECT o.id, o.status, o.payment_status, o.total, o.review_note, o.created_at, c.email,
+             -- 收件資料以訂單上存的為準；舊訂單沒有存，才退回客人表的最新資料
+             COALESCE(o.ship_name, c.name) AS name,
+             COALESCE(o.ship_phone, c.phone) AS phone,
+             COALESCE(o.ship_address, c.address) AS address,
+             (o.ship_address IS NULL) AS legacy,
              string_agg(oi.product_name || ' × ' || oi.quantity, '、' ORDER BY oi.id) AS items
       FROM orders o JOIN customers c ON c.id = o.customer_id JOIN order_items oi ON oi.order_id = o.id
-      GROUP BY o.id, c.name, c.email ORDER BY o.id DESC LIMIT 100`)).rows;
+      GROUP BY o.id, c.name, c.email, c.phone, c.address ORDER BY o.id DESC LIMIT 100`)).rows;
   } catch (e) {
     return <SetupNotice reason={dbErrorReason(e)} />;
   }
@@ -104,7 +109,13 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
               {orders.map((o) => (
                 <tr key={o.id}>
                   <td>#{o.id}<br /><span className="hint">{new Date(o.created_at).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })}</span></td>
-                  <td>{o.name}<br /><span className="hint">{o.email}</span></td>
+                  <td>
+                    {o.name}<br />
+                    <span className="hint">{o.email}</span><br />
+                    <span className="hint">{o.phone}</span><br />
+                    <span className="hint">{o.address}</span>
+                    {o.legacy && <><br /><span className="hint">（舊訂單，取自客人最新資料）</span></>}
+                  </td>
                   <td>{o.items}</td>
                   <td className="nowrap">{formatNT(o.total)}</td>
                   <td><span className={`badge ${o.payment_status}`}>{PAYMENT_STATUS[o.payment_status]}</span></td>

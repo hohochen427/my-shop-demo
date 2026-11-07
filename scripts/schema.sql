@@ -64,6 +64,11 @@ WHERE NOT EXISTS (SELECT 1 FROM orders);
 -- 優惠碼：舊訂單自動是「沒用碼、折 0 元」
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS coupon_code TEXT;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount INTEGER NOT NULL DEFAULT 0 CHECK (discount >= 0);
+-- 收件資料：下單當下抄一份存在訂單上，之後同一個 email 再下單也不會改到這張。
+-- 加欄位之前的舊訂單這三格是空的，後台會改顯示客人表的最新資料並標註。
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS ship_name TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS ship_phone TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS ship_address TEXT;
 
 -- 訂單明細：記下「成交當下」的單價，之後商品改價也不影響這筆
 CREATE TABLE IF NOT EXISTS order_items (

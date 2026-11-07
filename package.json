@@ -9,6 +9,7 @@
     "start": "next start",
     "db:setup": "node --env-file-if-exists=.env.local scripts/db-setup.mjs",
     "simulate:paid": "node --env-file-if-exists=.env.local scripts/simulate-notify.mjs",
+    "check:snapshot": "node --env-file-if-exists=.env.local scripts/check-order-snapshot.mjs",
     "check:coupons": "node --env-file-if-exists=.env.local scripts/check-coupon-release.mjs"
   },
   "engines": {
