@@ -1,4 +1,4 @@
--- 小島果醬的五張資料表。重複執行也安全（IF NOT EXISTS）。
+-- 小島果醬的七張資料表。重複執行也安全（IF NOT EXISTS）。
 
 -- 商品
 CREATE TABLE IF NOT EXISTS products (
@@ -10,6 +10,25 @@ CREATE TABLE IF NOT EXISTS products (
   stock       INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
   color       TEXT NOT NULL DEFAULT '#B45309', -- 果醬罐插圖的顏色
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 優惠碼：code 一律存大寫；per_email_limit、total_limit 是 NULL 代表不限
+CREATE TABLE IF NOT EXISTS coupons (
+  id              SERIAL PRIMARY KEY,
+  code            TEXT UNIQUE NOT NULL CHECK (code = upper(code)),
+  kind            TEXT NOT NULL CHECK (kind IN ('fixed','percent')),
+  value           INTEGER NOT NULL CHECK (value > 0),
+  max_discount    INTEGER CHECK (max_discount > 0),
+  min_subtotal    INTEGER NOT NULL DEFAULT 0 CHECK (min_subtotal >= 0),
+  starts_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+  ends_at         TIMESTAMPTZ,
+  total_limit     INTEGER CHECK (total_limit > 0),
+  per_email_limit INTEGER DEFAULT 1 CHECK (per_email_limit > 0),
+  active          BOOLEAN NOT NULL DEFAULT true,
+  note            TEXT NOT NULL DEFAULT '',
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CHECK (kind <> 'percent' OR value < 100),
+  CHECK (ends_at IS NULL OR ends_at > starts_at)
 );
 
 -- 客人：同一個 email 只存一筆，地址不用每張訂單重打
@@ -42,6 +61,9 @@ CREATE TABLE IF NOT EXISTS orders (
 -- 訂單編號從 1001 開始
 SELECT setval(pg_get_serial_sequence('orders','id'), 1000, true)
 WHERE NOT EXISTS (SELECT 1 FROM orders);
+-- 優惠碼：舊訂單自動是「沒用碼、折 0 元」
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS coupon_code TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount INTEGER NOT NULL DEFAULT 0 CHECK (discount >= 0);
 
 -- 訂單明細：記下「成交當下」的單價，之後商品改價也不影響這筆
 CREATE TABLE IF NOT EXISTS order_items (
@@ -64,3 +86,16 @@ CREATE TABLE IF NOT EXISTS payments (
   raw               JSONB NOT NULL,
   received_at       TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- 優惠碼使用紀錄：一張訂單最多一筆；訂單取消時填 released_at（退回名額），不刪紀錄
+CREATE TABLE IF NOT EXISTS coupon_redemptions (
+  id          SERIAL PRIMARY KEY,
+  coupon_id   INTEGER NOT NULL REFERENCES coupons(id),
+  order_id    INTEGER UNIQUE NOT NULL REFERENCES orders(id),
+  email       TEXT NOT NULL,
+  discount    INTEGER NOT NULL CHECK (discount > 0),
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  released_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS coupon_redemptions_active
+  ON coupon_redemptions (coupon_id, email) WHERE released_at IS NULL;

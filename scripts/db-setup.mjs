@@ -22,7 +22,7 @@ try {
   await client.connect();
   const sql = readFileSync(new URL("./schema.sql", import.meta.url), "utf8");
   await client.query(sql);
-  console.log("✔ 資料表已建立：products、customers、orders、order_items、payments");
+  console.log("✔ 資料表已建立：products、coupons、customers、orders、order_items、payments、coupon_redemptions");
   const { rows } = await client.query("SELECT count(*)::int AS n FROM products");
   if (rows[0].n === 0) {
     for (const p of SAMPLE) {
