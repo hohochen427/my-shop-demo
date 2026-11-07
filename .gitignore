@@ -16,3 +16,6 @@ next-env.d.ts
 Thumbs.db
 npm-debug.log*
 /.vercel
+
+# Claude Code 個人設定：只在自己電腦有效，不上傳
+.claude/settings.local.json
