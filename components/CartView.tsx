@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import JarArt from "./JarArt";
 import { readCart, writeCart, type CartLine } from "@/lib/cart";
 
@@ -13,6 +13,12 @@ export default function CartView({ shippingFee, freeOver }: { shippingFee: numbe
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  // 優惠碼：折多少由後端算，這裡只記住後端回覆的結果拿來顯示
+  const [couponInput, setCouponInput] = useState("");
+  const [applied, setApplied] = useState<{ code: string; discount: number } | null>(null);
+  const [couponMsg, setCouponMsg] = useState("");
+  const [checking, setChecking] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     setLines(readCart());
@@ -30,11 +36,44 @@ export default function CartView({ shippingFee, freeOver }: { shippingFee: numbe
   function update(next: CartLine[]) {
     setLines(next);
     writeCart(next);
+    // 購物車變了，折扣要重新問後端
+    if (applied) {
+      setApplied(null);
+      setCouponMsg("購物車有變動，請重新按「套用」");
+    }
   }
 
   const shown = lines.filter((l) => products[l.productId]);
   const subtotal = shown.reduce((s, l) => s + products[l.productId].price * l.quantity, 0);
   const shipping = subtotal >= freeOver || subtotal === 0 ? 0 : shippingFee;
+  const discount = applied?.discount ?? 0;
+
+  async function applyCoupon() {
+    const code = couponInput.trim();
+    if (!code) return;
+    setCouponMsg("");
+    setApplied(null);
+    setChecking(true);
+    const email = formRef.current?.elements.namedItem("email") as HTMLInputElement | null;
+    try {
+      const res = await fetch("/api/coupons/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code,
+          email: email?.value ?? "",
+          items: shown.map((l) => ({ productId: l.productId, quantity: l.quantity })),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) setCouponMsg(data.error ?? "這個優惠碼不能使用");
+      else setApplied({ code: data.code, discount: data.discount });
+    } catch {
+      setCouponMsg("網路連線有問題，請再試一次");
+    } finally {
+      setChecking(false);
+    }
+  }
 
   async function checkout(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -48,6 +87,7 @@ export default function CartView({ shippingFee, freeOver }: { shippingFee: numbe
         body: JSON.stringify({
           items: shown.map((l) => ({ productId: l.productId, quantity: l.quantity })),
           customer: { name: f.get("name"), email: f.get("email"), phone: f.get("phone"), address: f.get("address") },
+          coupon: applied?.code,
         }),
       });
       const data = await res.json();
@@ -121,11 +161,32 @@ export default function CartView({ shippingFee, freeOver }: { shippingFee: numbe
 
         <section className="panel" aria-labelledby="checkout-h">
           <h2 id="checkout-h" style={{ fontSize: "1.2rem" }}>結帳</h2>
+          <div className="field">
+            <label htmlFor="coupon">優惠碼</label>
+            <div style={{ display: "flex", gap: 8 }}>
+              <input id="coupon" type="text" autoComplete="off" value={couponInput} style={{ flex: 1, minWidth: 0 }}
+                onChange={(e) => setCouponInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyCoupon(); } }} />
+              <button type="button" className="btn ghost" onClick={applyCoupon} disabled={checking || !couponInput.trim()}>
+                {checking ? "檢查中…" : "套用"}
+              </button>
+            </div>
+            {couponMsg && <p className="notice err" role="alert">{couponMsg}</p>}
+          </div>
           <div className="sum"><span>商品小計</span><span>{nt(subtotal)}</span></div>
           <div className="sum"><span>運費</span><span>{shipping === 0 ? "免運" : nt(shipping)}</span></div>
-          <div className="sum total"><span>預估總金額</span><span>{nt(subtotal + shipping)}</span></div>
-          <p className="hint">實際金額以送出後店家系統計算為準。滿 {nt(freeOver)} 免運。</p>
-          <form onSubmit={checkout} style={{ marginTop: 16 }}>
+          {applied && (
+            <div className="sum">
+              <span>
+                優惠折抵（{applied.code}）
+                <button type="button" className="linkbtn" onClick={() => { setApplied(null); setCouponMsg(""); }}>移除</button>
+              </span>
+              <span>−{nt(discount)}</span>
+            </div>
+          )}
+          <div className="sum total"><span>預估總金額</span><span>{nt(subtotal + shipping - discount)}</span></div>
+          <p className="hint">實際金額以送出後店家系統計算為準。滿 {nt(freeOver)} 免運（看折扣前的商品小計）。</p>
+          <form ref={formRef} onSubmit={checkout} style={{ marginTop: 16 }}>
             <div className="field"><label htmlFor="name">收件人姓名</label><input id="name" name="name" type="text" required autoComplete="name" /></div>
             <div className="field"><label htmlFor="email">Email</label><input id="email" name="email" type="email" required autoComplete="email" /></div>
             <div className="field"><label htmlFor="phone">手機</label><input id="phone" name="phone" type="tel" required autoComplete="tel" /></div>

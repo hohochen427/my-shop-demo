@@ -35,7 +35,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
   let items: Item[] = [];
   try {
     const { rows } = await db().query(
-      "SELECT id, status, payment_status, subtotal, shipping_fee, total, access_token, created_at FROM orders WHERE id = $1",
+      "SELECT id, status, payment_status, subtotal, shipping_fee, discount, coupon_code, total, access_token, created_at FROM orders WHERE id = $1",
       [orderId]
     );
     order = rows[0];
@@ -86,6 +86,9 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
               <tr key={i}><td>{it.product_name}</td><td>{formatNT(it.unit_price)}</td><td>{it.quantity}</td><td>{formatNT(it.unit_price * it.quantity)}</td></tr>
             ))}
             <tr><td colSpan={3}>運費</td><td>{order.shipping_fee ? formatNT(order.shipping_fee) : "免運"}</td></tr>
+            {order.discount > 0 && (
+              <tr><td colSpan={3}>優惠折抵（{order.coupon_code}）</td><td>−{formatNT(order.discount)}</td></tr>
+            )}
             <tr><th scope="row" colSpan={3}>總金額</th><td><b>{formatNT(order.total)}</b></td></tr>
           </tbody>
         </table>
