@@ -1,12 +1,14 @@
-// 開發用：在自己的電腦上，模擬「綠界通知付款成功」。
+// 開發用：在自己的電腦上，模擬「綠界通知付款成功／失敗」。
 // 因為綠界連不到你電腦上的 localhost，本機測試付款流程時用這支。
 // 用法：npm run simulate:paid -- 1001          （訂單編號）
 //       npm run simulate:paid -- 1001 --twice  （同一筆通知送兩次，看系統會不會重複入帳）
+//       npm run simulate:paid -- 1001 --fail   （模擬付款失敗）
 import crypto from "node:crypto";
 import pg from "pg";
 
 const orderId = Number(process.argv[2]);
 const twice = process.argv.includes("--twice");
+const fail = process.argv.includes("--fail");
 const base = process.env.SIMULATE_BASE_URL || "http://localhost:3000";
 const { DATABASE_URL, ECPAY_MERCHANT_ID, ECPAY_HASH_KEY, ECPAY_HASH_IV } = process.env;
 
@@ -38,8 +40,8 @@ if (!rows[0]) {
 const params = {
   MerchantID: ECPAY_MERCHANT_ID,
   MerchantTradeNo: rows[0].merchant_trade_no,
-  RtnCode: "1",
-  RtnMsg: "交易成功",
+  RtnCode: fail ? "0" : "1",
+  RtnMsg: fail ? "付款失敗（模擬）" : "交易成功",
   TradeNo: "SIM" + Date.now(),
   TradeAmt: String(rows[0].total),
   PaymentDate: new Date().toISOString().slice(0, 19).replace("T", " ").replace(/-/g, "/"),
