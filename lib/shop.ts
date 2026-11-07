@@ -4,9 +4,9 @@ export const SHOP = {
   tagline: "小農水果，小鍋慢熬，一罐一罐裝進你家的早餐桌。",
   shippingFee: 80,
   freeShippingOver: 1000,
-  // 3D 果醬島（D:\jam-island）的正式網址，放在 Netlify 的 statuesque-froyo-f8d914 專案。
+  // 3D 果醬島（D:\jam-island）的正式網址，Netlify 專案名稱 henhen-jan-island（店主 2026-11-08 改名）。
   // （舊的 jam-island.netlify.app 還是舊版，不要連那邊）
-  islandUrl: "https://statuesque-froyo-f8d914.netlify.app/",
+  islandUrl: "https://henhen-jan-island.netlify.app/",
 };
 
 // 運費規則：由後端計算，前端顯示的只是預估
