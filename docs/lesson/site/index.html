@@ -7,9 +7,9 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* 版面：單欄教案長頁；「島（青）」「店（陶土橘）」「AI（莓紅）」三色標示；所有方格都是翻翻卡，背面一律用 --back 底色。顏色沿用商店 app/globals.css。 */
+/* 版面：單欄教案長頁，中英對照（中文在上、英文在下）；「島（青）」「店（陶土橘）」「AI（莓紅）」三色；所有方格都是翻翻卡。顏色沿用商店 app/globals.css。 */
 :root {
   --bg: #fdf8f1;
   --card: #ffffff;
@@ -26,6 +26,7 @@
   --code-bg: #f6eee3;
   --f-display: "Huninn", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
   --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-en: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --f-mono: "JetBrains Mono", "Consolas", "Noto Sans TC", monospace;
 }
 @media (prefers-color-scheme: dark) {
@@ -59,20 +60,38 @@ a { color: var(--accent); }
 button { font: inherit; color: inherit; }
 a:focus-visible, button:focus-visible { outline: 3px solid var(--sea); outline-offset: 2px; }
 
+/* 中英對照：.en 是接在中文下面的英文；.en-i 是同一行的短英文（例如標籤）。 */
+.en { display: block; font-family: var(--f-en); font-size: .9em; line-height: 1.5; color: var(--muted); letter-spacing: 0; }
+.en-i { font-family: var(--f-en); margin-left: .35em; letter-spacing: 0; }
+h1 .en { font-size: .42em; margin-top: 6px; }
+h2 .en { font-size: .58em; margin-top: 2px; }
+h3 .en { font-size: .74em; }
+.eyebrow .en-i { letter-spacing: .04em; }
+html[data-lang="zh"] .en, html[data-lang="zh"] .en-i, html[data-lang="zh"] .svg-en { display: none !important; }
+html[data-lang="en"] .zh, html[data-lang="en"] .svg-zh { display: none !important; }
+html[data-lang="en"] .en { color: inherit; font-size: 1em; margin-top: 0; }
+html[data-lang="en"] .en-i { margin-left: 0; }
+html[data-lang="en"] h1, html[data-lang="en"] h2, html[data-lang="en"] h3 { font-family: var(--f-en); font-weight: 700; }
+
 /* 開頭 */
 header { display: flex; flex-direction: column; gap: 14px; }
-.topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.topbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 16px; }
+.top-right { display: flex; align-items: center; gap: 14px; }
 .logo { height: 64px; width: auto; flex: none; }
+.langs { display: inline-flex; border: 1.5px solid var(--line); border-radius: 999px; padding: 3px; background: var(--card); }
+.langs button { border: 0; background: none; border-radius: 999px; padding: 4px 12px; font-size: .85rem; font-weight: 700; cursor: pointer; min-height: 34px; color: var(--muted); }
+.langs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 .lede { font-size: 1.12rem; color: var(--muted); max-width: 36em; }
+.lede .en { font-size: .92em; margin-top: 6px; }
 .sites { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 8px; }
 .site { background: var(--card); border: 1.5px solid var(--line); border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .site.island { border-top: 6px solid var(--sea); }
 .site.shop { border-top: 6px solid var(--accent); }
 .site .url { font-family: var(--f-mono); font-size: .82rem; color: var(--muted); overflow-wrap: anywhere; }
-.site dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 6px 0 0; font-size: .93rem; }
+.site dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 6px 0 0; font-size: .93rem; }
 .site dt { color: var(--muted); }
-.site dd { margin: 0; }
-.howto { display: flex; align-items: center; gap: 10px; background: var(--back); border: 1.5px dashed var(--berry); border-radius: 12px; padding: 10px 14px; font-size: .95rem; }
+.site dd { margin: 0; min-width: 0; }
+.howto { display: flex; flex-direction: column; gap: 2px; background: var(--back); border: 1.5px dashed var(--berry); border-radius: 12px; padding: 10px 14px; font-size: .95rem; }
 .howto strong { color: var(--berry); }
 
 /* 整組翻開／蓋回 */
@@ -88,17 +107,16 @@ header { display: flex; flex-direction: column; gap: 14px; }
 .face { grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 14px; border: 1.5px solid var(--line); background: var(--card); padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .face.back { transform: rotateY(180deg); background: var(--back); border-color: var(--berry); }
 .flip:hover .face.front { border-color: var(--muted); }
-.flip-btn { align-self: flex-start; margin-top: auto; border: 0; background: none; padding: 4px 0; font-size: .82rem; font-weight: 700; color: var(--berry); cursor: pointer; min-height: 32px; }
+.flip-btn { align-self: flex-start; margin-top: auto; border: 0; background: none; padding: 4px 0; font-size: .82rem; font-weight: 700; color: var(--berry); cursor: pointer; min-height: 32px; text-align: left; }
 .flip-btn::before { content: "↻ "; }
-.tag-t { font-size: .78rem; color: var(--muted); font-weight: 700; letter-spacing: .06em; }
 
 /* 圖 */
 figure { margin: 0; background: var(--card); border: 1.5px solid var(--line); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
 figcaption { font-size: .9rem; color: var(--muted); }
 .svgbox { overflow-x: auto; }
 .svgbox svg { display: block; width: 100%; height: auto; }
-.svgbox.wide svg { min-width: 680px; }
-.svgbox.tall svg { max-width: 560px; margin: 0 auto; }
+.svgbox.wide svg { min-width: 720px; }
+.svgbox.tall svg { max-width: 580px; margin: 0 auto; }
 svg text { font-family: var(--f-body); }
 .n { fill: var(--card); stroke: var(--line); stroke-width: 1.5; }
 .n-sea { fill: var(--sea-soft); stroke: var(--sea); stroke-width: 2; }
@@ -106,16 +124,22 @@ svg text { font-family: var(--f-body); }
 .n-berry { fill: var(--berry-soft); stroke: var(--berry); stroke-width: 2; }
 .n-plain { fill: var(--bg); stroke: var(--muted); stroke-width: 1.5; }
 .t { fill: var(--ink); font-size: 15px; font-weight: 700; }
+.t-en { fill: var(--ink); font-size: 13px; font-weight: 700; font-family: var(--f-en); }
 .s { fill: var(--muted); font-size: 12.5px; }
+.s-en { fill: var(--muted); font-size: 11.5px; font-family: var(--f-en); }
 .bt { fill: var(--ink); font-size: 12.5px; }
+.bt-en { fill: var(--muted); font-size: 11.5px; font-family: var(--f-en); }
 .lab { fill: var(--ink); font-size: 12.5px; }
+.lab.svg-en { font-size: 11.5px; fill: var(--muted); font-family: var(--f-en); }
 .lab-berry { fill: var(--berry); font-size: 12.5px; font-weight: 700; }
+.lab-berry.svg-en { font-size: 11.5px; font-family: var(--f-en); }
 .e { stroke: var(--muted); stroke-width: 1.6; fill: none; }
 .e-berry { stroke: var(--berry); stroke-width: 1.6; fill: none; stroke-dasharray: 5 4; }
 .ah { fill: var(--muted); }
 .ah-berry { fill: var(--berry); }
 .lane { fill: var(--bg); stroke: var(--line); stroke-width: 1; }
 .lane-t { fill: var(--muted); font-size: 13px; font-weight: 700; }
+.lane-t.svg-en { font-size: 11.5px; font-family: var(--f-en); }
 /* 流程圖方塊翻面 */
 .node { cursor: pointer; transform-box: fill-box; transform-origin: center; transition: transform .16s ease-in; outline: none; }
 .node.turning { transform: scaleX(0); }
@@ -129,13 +153,15 @@ svg text { font-family: var(--f-body); }
 /* 技術卡 */
 .tech-groups { display: flex; flex-direction: column; gap: 26px; }
 .tg { display: flex; flex-direction: column; gap: 12px; }
-.tg h3 { display: flex; align-items: center; gap: 10px; }
-.dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.tg h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.tg h3 .en { display: inline; }
+.dot { width: 12px; height: 12px; border-radius: 50%; flex: none; align-self: center; }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-.tech .front { justify-content: flex-start; }
 .tech .name { font-family: var(--f-display); font-size: 1.3rem; line-height: 1.3; overflow-wrap: anywhere; }
+.tech .name .en { font-size: .68em; }
 .tech .guess { font-size: .88rem; color: var(--muted); }
 .tech .say { font-weight: 700; font-size: 1.02rem; }
+.tech .say .en { font-weight: 700; }
 .tech .use { font-size: .9rem; color: var(--muted); }
 .tg.sea .front { border-top: 5px solid var(--sea); }
 .tg.shop .front { border-top: 5px solid var(--accent); }
@@ -148,21 +174,26 @@ svg text { font-family: var(--f-body); }
 /* 路線 */
 .tracks { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
 .track { background: var(--card); border: 1.5px solid var(--line); border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.track ol { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 4px; }
+.track h3 .lvl { vertical-align: middle; margin-right: 6px; }
+.track ol { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 8px; }
 .track .note { font-size: .88rem; color: var(--muted); }
 
 /* 提示詞卡 */
 .prompts { display: flex; flex-direction: column; gap: 14px; }
-.pr .front { display: grid; grid-template-columns: 54px 1fr; gap: 6px 14px; align-content: start; }
-.pr .num { font-family: var(--f-display); font-size: 1.7rem; color: var(--accent); text-align: center; line-height: 1; padding-top: 4px; grid-row: span 4; }
+.pr .front { display: grid; grid-template-columns: 54px 1fr; gap: 6px 14px; align-content: center; }
+.pr .front > :not(.num) { grid-column: 2; }
+.pr .num { font-family: var(--f-display); font-size: 1.7rem; color: var(--accent); text-align: center; line-height: 1; padding-top: 4px; grid-column: 1; grid-row: 1 / span 4; }
 .pr-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
 .pr-why { font-size: .93rem; color: var(--muted); }
 .pr-think { font-size: .93rem; font-weight: 700; color: var(--berry); }
+.pr-think .en { color: var(--berry); }
 .pr .front .flip-btn { margin-top: 2px; justify-self: start; }
-.pr .front { align-content: center; }
 .pr .back-title { font-weight: 700; font-size: .92rem; }
 .code { position: relative; background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; cursor: auto; }
-.code pre { margin: 0; padding: 14px 16px; padding-right: 76px; font-family: var(--f-mono); font-size: .86rem; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+.code-label { display: block; font-size: .75rem; font-weight: 700; letter-spacing: .06em; color: var(--muted); padding: 10px 16px 0; }
+.code pre { margin: 0; padding: 8px 16px 14px; padding-right: 76px; font-family: var(--f-mono); font-size: .86rem; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+.code.en-code { font-size: 1rem; color: var(--ink); line-height: 1.75; }
+.code.en-code pre { font-family: var(--f-en); font-size: .92rem; }
 .copy { position: absolute; top: 8px; right: 8px; font: 700 .8rem var(--f-body); border: 1.5px solid var(--line); background: var(--card); color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer; min-height: 32px; }
 .copy:hover { border-color: var(--accent); }
 .copy.done { color: var(--sea); border-color: var(--sea); }
@@ -171,6 +202,7 @@ svg text { font-family: var(--f-body); }
 .habits { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
 .habit .front { border-left: 5px solid var(--berry); justify-content: center; min-height: 128px; }
 .habit .front strong { font-family: var(--f-display); font-weight: 400; font-size: 1.3rem; line-height: 1.35; }
+.habit .front strong .en { font-size: .7em; }
 .habit .back strong { font-size: 1rem; }
 .habit .ex { font-size: .9rem; color: var(--muted); }
 
@@ -184,12 +216,36 @@ footer { font-size: .85rem; color: var(--muted); border-top: 1px solid var(--lin
 @media (max-width: 520px) {
   .logo { height: 48px; }
   .pr .front { grid-template-columns: 1fr; }
+  .pr .front > :not(.num) { grid-column: 1; }
   .pr .num { text-align: left; grid-row: auto; }
   .timeline li { grid-template-columns: 1fr; gap: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .flip-inner, .node { transition: none; }
 }
+
+/* 背景音樂：左下角小面板，用 YouTube 官方播放器（不下載音樂）。右下角留給 Netlify 標誌。 */
+body { padding-bottom: 200px; }
+.music { position: fixed; left: max(12px, env(safe-area-inset-left, 0px)); bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; width: min(300px, calc(100vw - 24px)); background: var(--card); border: 1.5px solid var(--line); border-radius: 14px; box-shadow: 0 6px 24px rgba(43, 29, 20, .18); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; font-size: .85rem; }
+.music-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.music-title { font-weight: 700; display: flex; align-items: center; gap: 6px; min-width: 0; }
+.music-title .en-i { color: var(--muted); font-weight: 400; }
+.music-min { border: 0; background: none; cursor: pointer; font-size: .8rem; font-weight: 700; color: var(--muted); padding: 4px 6px; min-height: 32px; white-space: nowrap; }
+.music-video { width: 160px; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: var(--code-bg); }
+.music-video:empty { display: none; }
+.music-video iframe { width: 100%; height: 100%; border: 0; display: block; }
+.music-row { display: flex; align-items: center; gap: 8px; }
+.music-play { border: 1.5px solid var(--accent); background: var(--accent); color: var(--card); border-radius: 999px; padding: 4px 12px; font-weight: 700; cursor: pointer; min-height: 36px; white-space: nowrap; }
+.music-play[aria-pressed="true"] { background: var(--card); color: var(--accent); }
+.music-vol { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+.music-vol label { color: var(--muted); white-space: nowrap; font-size: .8rem; }
+.music-vol input { flex: 1; min-width: 0; accent-color: var(--accent); height: 28px; }
+.music-vol output { font-variant-numeric: tabular-nums; width: 2.2em; text-align: right; color: var(--muted); font-size: .8rem; }
+.music-src { font-size: .75rem; color: var(--muted); overflow-wrap: anywhere; }
+.music-msg { font-size: .8rem; color: var(--berry); }
+.music.min { width: auto; padding: 4px; border-radius: 999px; }
+.music.min > :not(.music-head), .music.min .music-title { display: none; }
+.music.min .music-min { color: var(--accent); font-size: .9rem; }
 html, body { margin: 0; }
 [hidden] { display: none !important; }
 </style>
@@ -200,192 +256,182 @@ html, body { margin: 0; }
 
 <header>
   <div class="topbar">
-    <div class="eyebrow">中學資訊／科技課 教案</div>
-    <img class="logo" src="logo-rc.webp" alt="RC logo" width="211" height="160">
+    <div class="eyebrow"><span class="zh">中學資訊／科技課 教案</span><span class="en-i">Lesson plan · Middle school IT</span></div>
+    <div class="top-right">
+      <div class="langs" role="group" aria-label="語言 Language">
+        <button type="button" data-lang="both" aria-pressed="true">中英</button>
+        <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+        <button type="button" data-lang="en" aria-pressed="false">English</button>
+      </div>
+      <img class="logo" src="logo-rc.webp" alt="RC logo" width="211" height="160">
+    </div>
   </div>
-  <h1>果醬島開店課</h1>
-  <p class="lede">拆解「HenHen日初」的 3D 果醬島與果醬商店，看它用了哪些技術、照什麼順序做出來，以及怎麼對 AI 下提示詞。內容根據兩個網站的原始碼與存檔紀錄整理。</p>
+  <h1><span class="zh">果醬島開店課</span><span class="en">Jam Island Shop Class</span></h1>
+  <p class="lede"><span class="zh">拆解「HenHen日初」的 3D 果醬島與果醬商店，看它用了哪些技術、照什麼順序做出來，以及怎麼對 AI 下提示詞。內容根據兩個網站的原始碼與存檔紀錄整理。</span><span class="en">We take apart two real websites by HenHen日初: a 3D Jam Island and a jam shop. You will see which tools they use, the order they were built in, and how to give clear instructions (prompts) to AI. Everything here comes from the real code and save history.</span></p>
   <div class="sites">
     <div class="site island">
-      <h3>3D 果醬島（入口、展示）</h3>
+      <h3><span class="zh">3D 果醬島（入口、展示）</span><span class="en">3D Jam Island (the entrance)</span></h3>
       <div class="url">henhen-jan-island.netlify.app</div>
       <dl>
-        <dt>做什麼</dt><dd>可旋轉、縮放的小島，點建築跳出果醬圖卡與影片</dd>
-        <dt>規模</dt><dd>1 個 HTML＋4 支 JS，約 1,300 行</dd>
-        <dt>難度</dt><dd><span class="lvl basic">基礎班可做</span></dd>
+        <dt><span class="zh">做什麼</span><span class="en">What</span></dt><dd><span class="zh">可旋轉、縮放的小島，點建築跳出果醬圖卡與影片</span><span class="en">A 3D island you can turn and zoom. Tap a building to see jam cards and videos.</span></dd>
+        <dt><span class="zh">規模</span><span class="en">Size</span></dt><dd><span class="zh">1 個 HTML＋4 支 JS，約 1,300 行</span><span class="en">1 HTML file + 4 JS files, about 1,300 lines</span></dd>
+        <dt><span class="zh">難度</span><span class="en">Level</span></dt><dd><span class="lvl basic"><span class="zh">基礎班可做</span><span class="en-i">Basic class</span></span></dd>
       </dl>
     </div>
     <div class="site shop">
-      <h3>果醬商店（真的能下單）</h3>
+      <h3><span class="zh">果醬商店（真的能下單）</span><span class="en">Jam Shop (real orders)</span></h3>
       <div class="url">my-shop-demo-bay.vercel.app</div>
       <dl>
-        <dt>做什麼</dt><dd>商品、購物車、優惠碼、模擬付款、訂單查詢、店家後台</dd>
-        <dt>規模</dt><dd>前台＋後台＋資料庫＋金流</dd>
-        <dt>難度</dt><dd><span class="lvl adv">進階班</span></dd>
+        <dt><span class="zh">做什麼</span><span class="en">What</span></dt><dd><span class="zh">商品、購物車、優惠碼、模擬付款、訂單查詢、店家後台</span><span class="en">Products, cart, coupons, test payments, order lookup, and an owner page</span></dd>
+        <dt><span class="zh">規模</span><span class="en">Size</span></dt><dd><span class="zh">前台＋後台＋資料庫＋金流</span><span class="en">Front end + back end + database + payments</span></dd>
+        <dt><span class="zh">難度</span><span class="en">Level</span></dt><dd><span class="lvl adv"><span class="zh">進階班</span><span class="en-i">Advanced class</span></span></dd>
       </dl>
     </div>
   </div>
-  <p class="howto"><strong>↻ 翻翻卡</strong>流程圖的方塊、技術、提示詞、好習慣都可以點一下翻面。上課時先讓學生猜，再翻開對答案。</p>
+  <p class="howto"><strong>↻ <span class="zh">翻翻卡</span><span class="en-i">Flip cards</span></strong><span class="zh">流程圖的方塊、技術、提示詞、好習慣都可以點一下翻面。上課時先讓學生猜，再翻開對答案。</span><span class="en">Tap any diagram box, tech card, prompt, or habit to flip it. In class, let students guess first, then flip to check.</span></p>
 </header>
 
 <section id="arch">
-  <div class="eyebrow">圖一</div>
+  <div class="eyebrow"><span class="zh">圖一</span><span class="en-i">Diagram 1</span></div>
   <div class="head-row">
-    <h2>兩個網站怎麼串在一起</h2>
-    <div class="deck-ctrl"><button type="button" data-all="open">全部翻開</button><button type="button" data-all="close">全部蓋回</button></div>
+    <h2><span class="zh">兩個網站怎麼串在一起</span><span class="en">How the two websites connect</span></h2>
+    <div class="deck-ctrl"><button type="button" data-all="open"><span class="zh">全部翻開</span><span class="en-i">Open all</span></button><button type="button" data-all="close"><span class="zh">全部蓋回</span><span class="en-i">Close all</span></button></div>
   </div>
-  <p class="prose">小島只負責「好看、好逛」，沒有後端；商店負責「算錢、存訂單」。兩邊用一般的網頁連結互相連過去。</p>
+  <p class="prose"><span class="zh">小島只負責「好看、好逛」，沒有後端；商店負責「算錢、存訂單」。兩邊用一般的網頁連結互相連過去。</span><span class="en">The island is for looking around. It has no back end. The shop handles money and saves orders. The two sites link to each other with normal web links.</span></p>
   <figure>
     <div class="svgbox wide">
-      <svg viewBox="0 0 900 380" role="group" aria-labelledby="arch-t">
-        <title id="arch-t">網站架構圖：客人進入 3D 果醬島或商店；小島讀取果醬資料檔，點圖卡連到商店；商店連 Neon 資料庫與綠界測試付款，綠界付款後回傳通知。每個方塊可點擊翻面看說明。</title>
+      <svg viewBox="0 0 900 500" role="group" aria-labelledby="arch-t">
+        <title id="arch-t">網站架構圖 Website map：客人進入 3D 果醬島或商店；小島讀取果醬資料檔，點圖卡連到商店；商店連 Neon 資料庫與綠界測試付款，綠界付款後回傳通知。</title>
         <defs>
           <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
         </defs>
-        <path class="e" d="M150 172 C 195 160, 200 100, 238 92" marker-end="url(#a1)"/>
-        <path class="e" d="M150 200 C 195 212, 200 285, 238 292" marker-end="url(#a1)"/>
-        <text class="lab" x="160" y="262">直接逛店</text>
-        <path class="e" d="M325 140 L325 234" marker-end="url(#a1)"/>
-        <text class="lab" x="244" y="192">點圖卡去買</text>
-        <path class="e" d="M405 234 L405 140" marker-end="url(#a1)"/>
-        <text class="lab" x="414" y="192">回小島</text>
-        <path class="e" d="M490 84 L638 78" marker-end="url(#a1)"/>
-        <text class="lab" x="530" y="70">讀取</text>
-        <path class="e" d="M490 262 L638 248" marker-end="url(#a1)"/>
-        <text class="lab" x="520" y="244">存取資料</text>
-        <path class="e" d="M490 318 L638 318" marker-end="url(#a1)"/>
-        <text class="lab" x="530" y="310">轉去付款</text>
-        <path class="e" d="M638 344 L490 344" marker-end="url(#a1)"/>
-        <text class="lab" x="530" y="366">付款通知</text>
+        <path class="e" d="M160 220 C 200 205, 205 130, 238 112" marker-end="url(#a1)"/>
+        <path class="e" d="M160 252 C 200 268, 205 370, 238 382" marker-end="url(#a1)"/>
+        <text class="lab svg-zh" x="132" y="330">直接逛店</text>
+        <text class="lab svg-en" x="132" y="345">Shop directly</text>
+        <path class="e" d="M290 170 L290 298" marker-end="url(#a1)"/>
+        <text class="lab svg-zh" x="298" y="228">點圖卡去買</text>
+        <text class="lab svg-en" x="298" y="243">Tap a card to buy</text>
+        <path class="e" d="M450 298 L450 170" marker-end="url(#a1)"/>
+        <text class="lab svg-zh" x="458" y="228">回小島</text>
+        <text class="lab svg-en" x="458" y="243">Back to island</text>
+        <path class="e" d="M500 96 L638 90" marker-end="url(#a1)"/>
+        <text class="lab svg-zh" x="540" y="74">讀取</text>
+        <text class="lab svg-en" x="540" y="88">Reads</text>
+        <path class="e" d="M500 342 L638 326" marker-end="url(#a1)"/>
+        <text class="lab svg-zh" x="516" y="314">存取資料</text>
+        <text class="lab svg-en" x="516" y="328">Saves data</text>
+        <path class="e" d="M500 420 L638 420" marker-end="url(#a1)"/>
+        <text class="lab svg-zh" x="520" y="398">轉去付款</text>
+        <text class="lab svg-en" x="520" y="412">Go to payment</text>
+        <path class="e" d="M638 455 L500 455" marker-end="url(#a1)"/>
+        <text class="lab svg-zh" x="520" y="474">付款通知</text>
+        <text class="lab svg-en" x="520" y="488">Payment notice</text>
 
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="客人">
-          <rect class="shape n-plain" x="20" y="150" width="130" height="70" rx="12"/>
-          <g class="front"><text class="t" x="85" y="182" text-anchor="middle">客人</text><text class="s" x="85" y="204" text-anchor="middle">用手機或電腦</text></g>
-          <g class="back"><text class="bt" x="85" y="180" text-anchor="middle">不用安裝東西</text><text class="bt" x="85" y="200" text-anchor="middle">打開網址就能逛</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="3D 果醬島">
-          <rect class="shape n-sea" x="240" y="30" width="250" height="108" rx="14"/>
-          <g class="front"><text class="t" x="365" y="62" text-anchor="middle">3D 果醬島</text><text class="s" x="365" y="86" text-anchor="middle">HTML・CSS・JavaScript＋Three.js</text><text class="s" x="365" y="108" text-anchor="middle">放在 Netlify（拖曳資料夾上線）</text></g>
-          <g class="back"><text class="bt" x="365" y="62" text-anchor="middle">Three.js 畫出地形、建築、海</text><text class="bt" x="365" y="84" text-anchor="middle">點建築會跳出資料檔裡的圖卡</text><text class="bt" x="365" y="106" text-anchor="middle">沒有後端，不存任何訂單</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="果醬商店">
-          <rect class="shape n-shop" x="240" y="236" width="250" height="118" rx="14"/>
-          <g class="front"><text class="t" x="365" y="270" text-anchor="middle">果醬商店</text><text class="s" x="365" y="294" text-anchor="middle">Next.js：前台＋後台＋API</text><text class="s" x="365" y="316" text-anchor="middle">放在 Vercel（GitHub 推上去自動部署）</text><text class="s" x="365" y="336" text-anchor="middle">錢一律在這裡重算</text></g>
-          <g class="back"><text class="bt" x="365" y="268" text-anchor="middle">app/ 是頁面，app/api/ 是後端</text><text class="bt" x="365" y="292" text-anchor="middle">價格、運費、折扣都從資料庫重算</text><text class="bt" x="365" y="316" text-anchor="middle">資料庫密碼只放在後端</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="內容資料檔">
-          <rect class="shape n" x="640" y="46" width="230" height="64" rx="12"/>
-          <g class="front"><text class="t" x="755" y="74" text-anchor="middle">內容資料檔（JSON）</text><text class="s" x="755" y="96" text-anchor="middle">果醬介紹、YouTube 影片</text></g>
-          <g class="back"><text class="bt" x="755" y="73" text-anchor="middle">改介紹文字不用碰程式</text><text class="bt" x="755" y="94" text-anchor="middle">價格不放這裡，以商店為準</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="Neon 資料庫">
-          <rect class="shape n" x="640" y="214" width="230" height="64" rx="12"/>
-          <g class="front"><text class="t" x="755" y="242" text-anchor="middle">Neon 資料庫</text><text class="s" x="755" y="264" text-anchor="middle">商品・訂單・優惠碼</text></g>
-          <g class="back"><text class="bt" x="755" y="241" text-anchor="middle">像放在網路上的大型表格</text><text class="bt" x="755" y="262" text-anchor="middle">Git 還原救不回這裡的資料</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="綠界測試付款">
-          <rect class="shape n" x="640" y="300" width="230" height="64" rx="12"/>
-          <g class="front"><text class="t" x="755" y="328" text-anchor="middle">綠界測試付款</text><text class="s" x="755" y="350" text-anchor="middle">模擬刷卡，不會真的扣錢</text></g>
-          <g class="back"><text class="bt" x="755" y="327" text-anchor="middle">通知會附簽章，防止偽造</text><text class="bt" x="755" y="348" text-anchor="middle">同一筆通知只處理一次</text></g>
-        </g>
+        <g class="node" data-id="cust"><rect class="shape n-plain" x="20" y="190" width="140" height="90" rx="12"/></g>
+        <g class="node" data-id="island"><rect class="shape n-sea" x="240" y="20" width="260" height="150" rx="14"/></g>
+        <g class="node" data-id="shop"><rect class="shape n-shop" x="240" y="300" width="260" height="170" rx="14"/></g>
+        <g class="node" data-id="json"><rect class="shape n" x="640" y="40" width="240" height="100" rx="12"/></g>
+        <g class="node" data-id="neon"><rect class="shape n" x="640" y="280" width="240" height="92" rx="12"/></g>
+        <g class="node" data-id="ecpay"><rect class="shape n" x="640" y="390" width="240" height="92" rx="12"/></g>
       </svg>
     </div>
-    <figcaption>青色是小島，橘色是商店。點任一個方塊翻面看說明。手機上可以左右滑動看完整張圖。</figcaption>
+    <figcaption><span class="zh">青色是小島，橘色是商店。點任一個方塊翻面看說明。手機上可以左右滑動看完整張圖。</span><span class="en">Teal = island, orange = shop. Tap any box to flip it. On a phone, swipe sideways to see the whole diagram.</span></figcaption>
   </figure>
 </section>
 
 <section id="tech">
-  <div class="eyebrow">技術清單</div>
+  <div class="eyebrow"><span class="zh">技術清單</span><span class="en-i">Tech list</span></div>
   <div class="head-row">
-    <h2>用到哪些技術</h2>
-    <div class="deck-ctrl"><button type="button" data-all="open">全部翻開</button><button type="button" data-all="close">全部蓋回</button></div>
+    <h2><span class="zh">用到哪些技術</span><span class="en">What tools were used</span></h2>
+    <div class="deck-ctrl"><button type="button" data-all="open"><span class="zh">全部翻開</span><span class="en-i">Open all</span></button><button type="button" data-all="close"><span class="zh">全部蓋回</span><span class="en-i">Close all</span></button></div>
   </div>
-  <p class="prose">正面是技術名稱，先讓學生猜它是做什麼的；背面是給學生的說法，以及它在這個網站裡的用途。</p>
+  <p class="prose"><span class="zh">正面是技術名稱，先讓學生猜它是做什麼的；背面是給學生的說法，以及它在這個網站裡的用途。</span><span class="en">The front shows the name of a tool. Let students guess what it does. The back gives a simple explanation and shows how this website uses it.</span></p>
   <div class="tech-groups">
     <div class="tg sea">
-      <h3><span class="dot" style="background:var(--sea)"></span>3D 果醬島</h3>
+      <h3><span class="dot" style="background:var(--sea)"></span><span class="zh">3D 果醬島</span><span class="en">3D Jam Island</span></h3>
       <div class="cards">
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">HTML／CSS／JavaScript</span><span class="lvl basic">基礎</span><span class="guess">猜猜看：三個各負責什麼？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">網頁的骨架、衣服、動作</span><span class="use">小島的 <code class="inl">index.html</code>、<code class="inl">styles.css</code> 和 <code class="inl">src/</code> 四支程式</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name">HTML／CSS／JavaScript</span><span class="lvl basic"><span class="zh">基礎</span><span class="en-i">Basic</span></span><span class="guess"><span class="zh">猜猜看：三個各負責什麼？</span><span class="en">Guess: what does each one do?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">網頁的骨架、衣服、動作</span><span class="en">The bones, clothes, and moves of a web page</span></span><span class="use"><span class="zh">小島的 <code class="inl">index.html</code>、<code class="inl">styles.css</code> 和 <code class="inl">src/</code> 四支程式</span><span class="en">The island's index.html, styles.css, and 4 files in src/</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">Three.js</span><span class="lvl basic">基礎</span><span class="guess">猜猜看：小島的 3D 怎麼畫出來？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">在網頁上畫 3D 的工具箱</span><span class="use">0.160 版，從 jsDelivr 網路下載站載入，不用安裝</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name">Three.js</span><span class="lvl basic"><span class="zh">基礎</span><span class="en-i">Basic</span></span><span class="guess"><span class="zh">猜猜看：小島的 3D 怎麼畫出來？</span><span class="en">Guess: how is the 3D island drawn?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">在網頁上畫 3D 的工具箱</span><span class="en">A toolbox for drawing 3D on a web page</span></span><span class="use"><span class="zh">0.160 版，從 jsDelivr 網路下載站載入，不用安裝</span><span class="en">Version 0.160, loaded from the jsDelivr site. No install needed.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">JSON 資料檔</span><span class="lvl basic">基礎</span><span class="guess">猜猜看：為什麼內容要另外放？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">把內容和程式分開放的表格</span><span class="use"><code class="inl">jams.json</code> 放果醬介紹，<code class="inl">videos.json</code> 放影片</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name"><span class="zh">JSON 資料檔</span><span class="en">JSON data file</span></span><span class="lvl basic"><span class="zh">基礎</span><span class="en-i">Basic</span></span><span class="guess"><span class="zh">猜猜看：為什麼內容要另外放？</span><span class="en">Guess: why keep the content in a separate file?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">把內容和程式分開放的表格</span><span class="en">A table that keeps content apart from code</span></span><span class="use"><span class="zh"><code class="inl">jams.json</code> 放果醬介紹，<code class="inl">videos.json</code> 放影片</span><span class="en">jams.json holds jam info. videos.json holds videos.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">本機小伺服器</span><span class="lvl basic">基礎</span><span class="guess">猜猜看：上線前怎麼先看到網站？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">在自己電腦上先預覽</span><span class="use">執行 <code class="inl">python serve.py</code>，打開 127.0.0.1:8123</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name"><span class="zh">本機小伺服器</span><span class="en">Local server</span></span><span class="lvl basic"><span class="zh">基礎</span><span class="en-i">Basic</span></span><span class="guess"><span class="zh">猜猜看：上線前怎麼先看到網站？</span><span class="en">Guess: how can you see the site before it goes online?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">在自己電腦上先預覽</span><span class="en">Preview the site on your own computer</span></span><span class="use"><span class="zh">執行 <code class="inl">python serve.py</code>，打開 127.0.0.1:8123</span><span class="en">Run python serve.py, then open 127.0.0.1:8123</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">Netlify</span><span class="lvl basic">基礎</span><span class="guess">猜猜看：網站放在哪裡別人才看得到？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">免費放網站的地方</span><span class="use">把整個資料夾拖曳到網頁上就上線</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name">Netlify</span><span class="lvl basic"><span class="zh">基礎</span><span class="en-i">Basic</span></span><span class="guess"><span class="zh">猜猜看：網站放在哪裡別人才看得到？</span><span class="en">Guess: where do you put a site so others can see it?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">免費放網站的地方</span><span class="en">A free place to host websites</span></span><span class="use"><span class="zh">把整個資料夾拖曳到網頁上就上線</span><span class="en">Drag the whole folder onto the page, and the site is online.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">AI 生圖</span><span class="lvl basic">基礎</span><span class="guess">猜猜看：果醬照片是真的拍的嗎？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">用文字叫 AI 畫示意圖</span><span class="use">Grok Imagine 產生 6 款果醬照，頁面標示「AI 示意圖」</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name"><span class="zh">AI 生圖</span><span class="en">AI images</span></span><span class="lvl basic"><span class="zh">基礎</span><span class="en-i">Basic</span></span><span class="guess"><span class="zh">猜猜看：果醬照片是真的拍的嗎？</span><span class="en">Guess: are the jam photos real?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">用文字叫 AI 畫示意圖</span><span class="en">Ask AI to draw a picture with words</span></span><span class="use"><span class="zh">Grok Imagine 產生 6 款果醬照，頁面標示「AI 示意圖」</span><span class="en">Grok Imagine made 6 jam photos. The site labels them as AI images.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
       </div>
     </div>
     <div class="tg shop">
-      <h3><span class="dot" style="background:var(--accent)"></span>果醬商店</h3>
+      <h3><span class="dot" style="background:var(--accent)"></span><span class="zh">果醬商店</span><span class="en">Jam Shop</span></h3>
       <div class="cards">
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">Next.js＋React</span><span class="lvl adv">進階</span><span class="guess">猜猜看：客人頁面和店家後台怎麼放在一起？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">同時做前台和後台的網站框架</span><span class="use">Next.js 16，客人頁面和店家後台在同一個專案</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name">Next.js＋React</span><span class="lvl adv"><span class="zh">進階</span><span class="en-i">Advanced</span></span><span class="guess"><span class="zh">猜猜看：客人頁面和店家後台怎麼放在一起？</span><span class="en">Guess: how do the customer pages and the owner page live together?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">同時做前台和後台的網站框架</span><span class="en">A framework for building the front end and back end together</span></span><span class="use"><span class="zh">Next.js 16，客人頁面和店家後台在同一個專案</span><span class="en">Next.js 16. Customer pages and the owner page are in one project.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">TypeScript</span><span class="lvl adv">進階</span><span class="guess">猜猜看：它和 JavaScript 差在哪？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">會幫你抓錯字的 JavaScript</span><span class="use">商店所有 <code class="inl">.ts</code>、<code class="inl">.tsx</code> 檔</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name">TypeScript</span><span class="lvl adv"><span class="zh">進階</span><span class="en-i">Advanced</span></span><span class="guess"><span class="zh">猜猜看：它和 JavaScript 差在哪？</span><span class="en">Guess: how is it different from JavaScript?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">會幫你抓錯字的 JavaScript</span><span class="en">JavaScript that catches your mistakes</span></span><span class="use"><span class="zh">商店所有 <code class="inl">.ts</code>、<code class="inl">.tsx</code> 檔</span><span class="en">All the .ts and .tsx files in the shop</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">Neon（PostgreSQL）</span><span class="lvl adv">進階</span><span class="guess">猜猜看：訂單存在哪裡？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">放在網路上的大型表格</span><span class="use">商品、訂單、付款、優惠碼各一張表</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name">Neon（PostgreSQL）</span><span class="lvl adv"><span class="zh">進階</span><span class="en-i">Advanced</span></span><span class="guess"><span class="zh">猜猜看：訂單存在哪裡？</span><span class="en">Guess: where are orders saved?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">放在網路上的大型表格</span><span class="en">A big table that lives online</span></span><span class="use"><span class="zh">商品、訂單、付款、優惠碼各一張表</span><span class="en">One table each for products, orders, payments, and coupons</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">綠界測試環境</span><span class="lvl adv">進階</span><span class="guess">猜猜看：練習刷卡會不會真的扣錢？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">模擬刷卡，不會真的扣錢</span><span class="use">付款完成後由綠界通知商店改訂單狀態</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name"><span class="zh">綠界測試環境</span><span class="en">ECPay test mode</span></span><span class="lvl adv"><span class="zh">進階</span><span class="en-i">Advanced</span></span><span class="guess"><span class="zh">猜猜看：練習刷卡會不會真的扣錢？</span><span class="en">Guess: does a practice payment take real money?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">模擬刷卡，不會真的扣錢</span><span class="en">Fake card payments, no real money</span></span><span class="use"><span class="zh">付款完成後由綠界通知商店改訂單狀態</span><span class="en">After paying, ECPay tells the shop to update the order.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">Vercel</span><span class="lvl adv">進階</span><span class="guess">猜猜看：改了程式怎麼自動更新網站？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">放 Next.js 網站的平台</span><span class="use">和 GitHub 連動，推上去自動更新</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name">Vercel</span><span class="lvl adv"><span class="zh">進階</span><span class="en-i">Advanced</span></span><span class="guess"><span class="zh">猜猜看：改了程式怎麼自動更新網站？</span><span class="en">Guess: how does the site update by itself after a code change?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">放 Next.js 網站的平台</span><span class="en">A host made for Next.js sites</span></span><span class="use"><span class="zh">和 GitHub 連動，推上去自動更新</span><span class="en">Linked to GitHub. Push your code, and the site updates.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">環境變數</span><span class="lvl adv">進階</span><span class="guess">猜猜看：資料庫密碼要放哪裡？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">放密碼的保險箱，不能上網</span><span class="use"><code class="inl">.env.local</code>，AI 被設定成讀不到</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name"><span class="zh">環境變數</span><span class="en">Environment variables</span></span><span class="lvl adv"><span class="zh">進階</span><span class="en-i">Advanced</span></span><span class="guess"><span class="zh">猜猜看：資料庫密碼要放哪裡？</span><span class="en">Guess: where should the database password go?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">放密碼的保險箱，不能上網</span><span class="en">A safe for passwords. It never goes online.</span></span><span class="use"><span class="zh"><code class="inl">.env.local</code>，AI 被設定成讀不到</span><span class="en">.env.local. The AI is set up so it can't read it.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
       </div>
     </div>
     <div class="tg ai">
-      <h3><span class="dot" style="background:var(--berry)"></span>AI 開發工具（兩個網站都用）</h3>
+      <h3><span class="dot" style="background:var(--berry)"></span><span class="zh">AI 開發工具（兩個網站都用）</span><span class="en">AI tools (used for both sites)</span></h3>
       <div class="cards">
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">Claude Code</span><span class="lvl all">兩班都教</span><span class="guess">猜猜看：程式是誰寫的？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">會讀檔、寫程式、跑指令的 AI 助手</span><span class="use">兩個網站的程式都由它寫，店主負責決定與驗收</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name">Claude Code</span><span class="lvl all"><span class="zh">兩班都教</span><span class="en-i">Both classes</span></span><span class="guess"><span class="zh">猜猜看：程式是誰寫的？</span><span class="en">Guess: who wrote the code?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">會讀檔、寫程式、跑指令的 AI 助手</span><span class="en">An AI helper that reads files, writes code, and runs commands</span></span><span class="use"><span class="zh">兩個網站的程式都由它寫，店主負責決定與驗收</span><span class="en">It wrote the code for both sites. The owner made the decisions and checked the work.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">CLAUDE.md</span><span class="lvl all">兩班都教</span><span class="guess">猜猜看：怎麼讓 AI 每次都守規矩？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">寫給 AI 看的班規</span><span class="use">例如「錢一律後端算」「先說要改哪裡，等同意再動手」</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name">CLAUDE.md</span><span class="lvl all"><span class="zh">兩班都教</span><span class="en-i">Both classes</span></span><span class="guess"><span class="zh">猜猜看：怎麼讓 AI 每次都守規矩？</span><span class="en">Guess: how do you make AI follow the rules every time?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">寫給 AI 看的班規</span><span class="en">Class rules written for the AI</span></span><span class="use"><span class="zh">例如「錢一律後端算」「先說要改哪裡，等同意再動手」</span><span class="en">For example: “Money is always calculated on the server.” “Tell me what you'll change, then wait for my OK.”</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">Git 存檔</span><span class="lvl all">兩班都教</span><span class="guess">猜猜看：改壞了怎麼回到昨天？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">遊戲的存檔點，改壞可以讀檔</span><span class="use">每完成一件事 commit 一次，約 25 個存檔</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name"><span class="zh">Git 存檔</span><span class="en">Git saves</span></span><span class="lvl all"><span class="zh">兩班都教</span><span class="en-i">Both classes</span></span><span class="guess"><span class="zh">猜猜看：改壞了怎麼回到昨天？</span><span class="en">Guess: how do you go back to yesterday's version?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">遊戲的存檔點，改壞可以讀檔</span><span class="en">Save points, like in a game. Load one if you break something.</span></span><span class="use"><span class="zh">每完成一件事 commit 一次，約 25 個存檔</span><span class="en">One commit after each finished task. About 25 saves so far.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">權限設定</span><span class="lvl adv">進階</span><span class="guess">猜猜看：有什麼是 AI 絕對不能碰的？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">硬性規定 AI 不能碰的東西</span><span class="use"><code class="inl">.claude/settings.json</code>：禁讀密碼檔，push 前要先問</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name"><span class="zh">權限設定</span><span class="en">Permission settings</span></span><span class="lvl adv"><span class="zh">進階</span><span class="en-i">Advanced</span></span><span class="guess"><span class="zh">猜猜看：有什麼是 AI 絕對不能碰的？</span><span class="en">Guess: what must the AI never touch?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">硬性規定 AI 不能碰的東西</span><span class="en">Hard rules about what the AI can't touch</span></span><span class="use"><span class="zh"><code class="inl">.claude/settings.json</code>：禁讀密碼檔，push 前要先問</span><span class="en">.claude/settings.json: no reading the password file, and ask before a push</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">規格文件</span><span class="lvl adv">進階</span><span class="guess">猜猜看：大功能動工前要先做什麼？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">動工前先寫清楚要做什麼</span><span class="use">優惠碼的 PRD（需求）、SDD（設計）、TASKS（分步）、CHECKLIST（驗收）</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name"><span class="zh">規格文件</span><span class="en">Spec documents</span></span><span class="lvl adv"><span class="zh">進階</span><span class="en-i">Advanced</span></span><span class="guess"><span class="zh">猜猜看：大功能動工前要先做什麼？</span><span class="en">Guess: what should you do before building a big feature?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">動工前先寫清楚要做什麼</span><span class="en">Write down clearly what to build before you start</span></span><span class="use"><span class="zh">優惠碼的 PRD（需求）、SDD（設計）、TASKS（分步）、CHECKLIST（驗收）</span><span class="en">Coupon docs: PRD (needs), SDD (design), TASKS (steps), CHECKLIST (testing)</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
         <div class="flip tech"><div class="flip-inner">
-          <div class="face front"><span class="name">檢查腳本</span><span class="lvl adv">進階</span><span class="guess">猜猜看：怎麼確定修好的東西不會再壞？</span><button class="flip-btn" type="button">翻面</button></div>
-          <div class="face back"><span class="say">自動幫你檢查有沒有壞掉的小程式</span><span class="use">超賣、優惠碼名額、密碼外洩等 8 支檢查</span><button class="flip-btn" type="button">翻回來</button></div>
+          <div class="face front"><span class="name"><span class="zh">檢查腳本</span><span class="en">Check scripts</span></span><span class="lvl adv"><span class="zh">進階</span><span class="en-i">Advanced</span></span><span class="guess"><span class="zh">猜猜看：怎麼確定修好的東西不會再壞？</span><span class="en">Guess: how do you make sure a fixed bug stays fixed?</span></span><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+          <div class="face back"><span class="say"><span class="zh">自動幫你檢查有沒有壞掉的小程式</span><span class="en">Small programs that check if something broke</span></span><span class="use"><span class="zh">超賣、優惠碼名額、密碼外洩等 8 支檢查</span><span class="en">8 checks, including overselling, coupon limits, and leaked passwords</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
         </div></div>
       </div>
     </div>
@@ -393,290 +439,401 @@ html, body { margin: 0; }
 </section>
 
 <section id="loop">
-  <div class="eyebrow">圖二</div>
+  <div class="eyebrow"><span class="zh">圖二</span><span class="en-i">Diagram 2</span></div>
   <div class="head-row">
-    <h2>和 AI 一起做網站的流程</h2>
-    <div class="deck-ctrl"><button type="button" data-all="open">全部翻開</button><button type="button" data-all="close">全部蓋回</button></div>
+    <h2><span class="zh">和 AI 一起做網站的流程</span><span class="en">How to build a website with AI</span></h2>
+    <div class="deck-ctrl"><button type="button" data-all="open"><span class="zh">全部翻開</span><span class="en-i">Open all</span></button><button type="button" data-all="close"><span class="zh">全部蓋回</span><span class="en-i">Close all</span></button></div>
   </div>
-  <p class="prose">這是整堂課最重要的一張圖。網站不是一句「幫我做電商網站」就完成的，而是先定規矩，再一次做一小件，每件都自己點過才存檔。</p>
+  <p class="prose"><span class="zh">這是整堂課最重要的一張圖。網站不是一句「幫我做電商網站」就完成的，而是先定規矩，再一次做一小件，每件都自己點過才存檔。</span><span class="en">This is the most important diagram in the lesson. You can't build a shop with one line like “Make me an online store.” Set the rules first. Then build one small thing at a time, and check each one yourself before you save.</span></p>
   <figure>
     <div class="svgbox tall">
-      <svg viewBox="0 0 640 700" role="group" aria-labelledby="loop-t">
-        <title id="loop-t">開發流程圖：寫規矩、請 AI 先規劃、只做一件事、在預覽點過；正常就存檔，還有下一件就回到只做一件事，全部做完就上線；不正常就把錯誤訊息貼給 AI 再改，同一錯誤三次就停下來問老師。每個方塊可點擊翻面看例子。</title>
+      <svg viewBox="0 0 640 820" role="group" aria-labelledby="loop-t">
+        <title id="loop-t">開發流程圖 Building flow：寫規矩、請 AI 先規劃、只做一件事、在預覽點過；正常就存檔，還有下一件就回到只做一件事，全部做完就上線；不正常就把錯誤訊息貼給 AI 再改，同一錯誤三次就停下來問老師。</title>
         <defs>
           <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
           <marker id="a2b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-berry" d="M0,0 L10,5 L0,10 z"/></marker>
         </defs>
-        <path class="e" d="M320 78 L320 104" marker-end="url(#a2)"/>
-        <path class="e" d="M320 168 L320 194" marker-end="url(#a2)"/>
-        <path class="e" d="M320 258 L320 284" marker-end="url(#a2)"/>
-        <path class="e" d="M320 348 L320 372" marker-end="url(#a2)"/>
-        <path class="e" d="M320 466 L320 500" marker-end="url(#a2)"/>
-        <text class="lab" x="330" y="488">正常</text>
-        <path class="e" d="M320 564 L320 610" marker-end="url(#a2)"/>
-        <text class="lab" x="330" y="592">全部做完</text>
-        <path class="e" d="M180 533 L70 533 L70 227 L178 227" marker-end="url(#a2)"/>
-        <text class="lab" x="78" y="390">還有</text>
-        <text class="lab" x="78" y="408">下一件</text>
-        <path class="e-berry" d="M430 420 L482 420" marker-end="url(#a2b)"/>
-        <text class="lab-berry" x="436" y="410">不正常</text>
-        <path class="e-berry" d="M558 388 L558 227 L462 227" marker-end="url(#a2b)"/>
-        <text class="lab-berry" x="490" y="476">同一錯誤三次</text>
-        <text class="lab-berry" x="490" y="494">→ 停下來問老師</text>
+        <path class="e" d="M320 96 L320 128" marker-end="url(#a2)"/>
+        <path class="e" d="M320 210 L320 242" marker-end="url(#a2)"/>
+        <path class="e" d="M320 324 L320 356" marker-end="url(#a2)"/>
+        <path class="e" d="M320 438 L320 444" marker-end="url(#a2)"/>
+        <path class="e" d="M320 574 L320 606" marker-end="url(#a2)"/>
+        <text class="lab svg-zh" x="330" y="590">正常</text>
+        <text class="lab svg-en" x="362" y="590">OK</text>
+        <path class="e" d="M320 688 L320 722" marker-end="url(#a2)"/>
+        <text class="lab svg-zh" x="330" y="706">全部做完</text>
+        <text class="lab svg-en" x="390" y="706">All done</text>
+        <path class="e" d="M170 648 L60 648 L60 284 L168 284" marker-end="url(#a2)"/>
+        <text class="lab svg-zh" x="68" y="452">還有</text>
+        <text class="lab svg-zh" x="68" y="470">下一件</text>
+        <text class="lab svg-en" x="68" y="488">Next</text>
+        <text class="lab svg-en" x="68" y="503">task</text>
+        <path class="e-berry" d="M460 510 L488 510" marker-end="url(#a2b)"/>
+        <text class="lab-berry svg-zh" x="512" y="454">不正常</text>
+        <text class="lab-berry svg-en" x="512" y="468">Not OK</text>
+        <path class="e-berry" d="M612 474 L612 284 L472 284" marker-end="url(#a2b)"/>
+        <text class="lab-berry svg-zh" x="490" y="574">同一錯誤三次</text>
+        <text class="lab-berry svg-zh" x="490" y="591">→ 停下來問老師</text>
+        <text class="lab-berry svg-en" x="490" y="607">Same error 3 times?</text>
+        <text class="lab-berry svg-en" x="490" y="622">→ Ask your teacher</text>
 
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="步驟一 寫規矩">
-          <rect class="shape n-berry" x="180" y="16" width="280" height="62" rx="12"/>
-          <g class="front"><text class="t" x="320" y="43" text-anchor="middle">① 寫規矩（CLAUDE.md）</text><text class="s" x="320" y="64" text-anchor="middle">AI 要遵守的班規，學生自己寫</text></g>
-          <g class="back"><text class="bt" x="320" y="42" text-anchor="middle">例：一次只做一件事；</text><text class="bt" x="320" y="62" text-anchor="middle">沒實際檢查過，不准說完成</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="步驟二 先規劃">
-          <rect class="shape n" x="180" y="106" width="280" height="62" rx="12"/>
-          <g class="front"><text class="t" x="320" y="133" text-anchor="middle">② 請 AI 先規劃，不寫程式</text><text class="s" x="320" y="154" text-anchor="middle">要哪些技術、檔案怎麼分、分幾步</text></g>
-          <g class="back"><text class="bt" x="320" y="132" text-anchor="middle">看懂計畫才說「開始」</text><text class="bt" x="320" y="152" text-anchor="middle">看不懂就請 AI 再講白一點</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="步驟三 只做一件事">
-          <rect class="shape n-sea" x="180" y="196" width="280" height="62" rx="12"/>
-          <g class="front"><text class="t" x="320" y="223" text-anchor="middle">③ 只做一件事</text><text class="s" x="320" y="244" text-anchor="middle">AI 先說要改哪些檔案，同意再動手</text></g>
-          <g class="back"><text class="bt" x="320" y="222" text-anchor="middle">一次只改一個功能</text><text class="bt" x="320" y="242" text-anchor="middle">壞了才知道是哪一步弄壞的</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="步驟四 在預覽點過">
-          <rect class="shape n" x="180" y="286" width="280" height="62" rx="12"/>
-          <g class="front"><text class="t" x="320" y="313" text-anchor="middle">④ 在預覽實際點過</text><text class="s" x="320" y="334" text-anchor="middle">照 AI 說的點哪裡、看什麼</text></g>
-          <g class="back"><text class="bt" x="320" y="312" text-anchor="middle">照 AI 給的路徑實際點一次</text><text class="bt" x="320" y="332" text-anchor="middle">手機寬度也要看</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="判斷 正常嗎">
-          <path class="shape n-plain" d="M320 374 L430 420 L320 466 L210 420 Z"/>
-          <g class="front"><text class="t" x="320" y="426" text-anchor="middle">正常嗎？</text></g>
-          <g class="back"><text class="bt" x="320" y="414" text-anchor="middle">畫面對嗎？</text><text class="bt" x="320" y="434" text-anchor="middle">F12 有紅字嗎？</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="步驟五 commit 存檔">
-          <rect class="shape n-shop" x="180" y="502" width="280" height="62" rx="12"/>
-          <g class="front"><text class="t" x="320" y="529" text-anchor="middle">⑤ commit 存檔</text><text class="s" x="320" y="550" text-anchor="middle">寫一句話說明這次改了什麼</text></g>
-          <g class="back"><text class="bt" x="320" y="528" text-anchor="middle">像遊戲存檔點，改壞可以讀檔</text><text class="bt" x="320" y="548" text-anchor="middle">例：「購物車加清空按鈕」</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="步驟六 上線">
-          <rect class="shape n-sea" x="180" y="612" width="280" height="62" rx="12"/>
-          <g class="front"><text class="t" x="320" y="639" text-anchor="middle">⑥ 上線</text><text class="s" x="320" y="660" text-anchor="middle">Netlify 或 Vercel，給同學網址</text></g>
-          <g class="back"><text class="bt" x="320" y="638" text-anchor="middle">小島：拖曳資料夾到 Netlify</text><text class="bt" x="320" y="658" text-anchor="middle">商店：推上 GitHub，Vercel 自動更新</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="貼錯誤訊息">
-          <rect class="shape n-berry" x="484" y="388" width="148" height="64" rx="12"/>
-          <g class="front"><text class="t" x="558" y="415" text-anchor="middle">貼錯誤訊息</text><text class="s" x="558" y="436" text-anchor="middle">F12 主控台的紅字</text></g>
-          <g class="back"><text class="bt" x="558" y="414" text-anchor="middle">整段複製，別只截一半</text><text class="bt" x="558" y="434" text-anchor="middle">說清楚按了什麼</text></g>
-        </g>
+        <g class="node" data-id="s1"><rect class="shape n-berry" x="170" y="16" width="300" height="80" rx="12"/></g>
+        <g class="node" data-id="s2"><rect class="shape n" x="170" y="130" width="300" height="80" rx="12"/></g>
+        <g class="node" data-id="s3"><rect class="shape n-sea" x="170" y="244" width="300" height="80" rx="12"/></g>
+        <g class="node" data-id="s4"><rect class="shape n" x="170" y="358" width="300" height="80" rx="12"/></g>
+        <g class="node" data-id="dia"><path class="shape n-plain" d="M320 446 L460 510 L320 574 L180 510 Z"/></g>
+        <g class="node" data-id="s5"><rect class="shape n-shop" x="170" y="608" width="300" height="80" rx="12"/></g>
+        <g class="node" data-id="s6"><rect class="shape n-sea" x="170" y="724" width="300" height="80" rx="12"/></g>
+        <g class="node" data-id="err"><rect class="shape n-berry" x="488" y="474" width="146" height="80" rx="12"/></g>
       </svg>
     </div>
-    <figcaption>①② 只做一次；③④⑤ 是一直重複的小循環。點方塊翻面看例子。這間店真實的存檔紀錄就是照這個節奏：一個功能拆成好幾個 commit。</figcaption>
+    <figcaption><span class="zh">①② 只做一次；③④⑤ 是一直重複的小循環。點方塊翻面看例子。這間店真實的存檔紀錄就是照這個節奏：一個功能拆成好幾個 commit。</span><span class="en">Do ① and ② once. Repeat ③ ④ ⑤ again and again. Tap a box to see an example. This shop's real save history follows this rhythm: one feature, many small commits.</span></figcaption>
   </figure>
 </section>
 
 <section id="tracks">
-  <div class="eyebrow">課程路線</div>
-  <h2>基礎班與進階班</h2>
-  <p class="prose">商店那一半要註冊 Neon、Vercel、GitHub、綠界等多個帳號，部分服務有年齡限制，金流概念對國中生也偏重。建議先做基礎班，進階班給高中或社團。</p>
+  <div class="eyebrow"><span class="zh">課程路線</span><span class="en-i">Course paths</span></div>
+  <h2><span class="zh">基礎班與進階班</span><span class="en">Basic class and advanced class</span></h2>
+  <p class="prose"><span class="zh">商店那一半要註冊 Neon、Vercel、GitHub、綠界等多個帳號，部分服務有年齡限制，金流概念對國中生也偏重。建議先做基礎班，進階班給高中或社團。</span><span class="en">The shop part needs accounts on Neon, Vercel, GitHub, and ECPay. Some have age limits, and online payments are a hard topic for junior high. Start with the basic class. The advanced class fits senior high or a club.</span></p>
   <div class="tracks">
     <div class="track">
-      <h3><span class="lvl basic">基礎班</span> 我的 3D 小島商店</h3>
+      <h3><span class="lvl basic"><span class="zh">基礎班</span><span class="en-i">Basic</span></span><span class="zh">我的 3D 小島商店</span><span class="en">My 3D island shop</span></h3>
       <ol>
-        <li>寫自己的 CLAUDE.md 班規</li>
-        <li>請 AI 規劃小島和檔案分工</li>
-        <li>做出地形、建築、可旋轉的鏡頭</li>
-        <li>建立 JSON 商品資料，點建築跳出圖卡</li>
-        <li>加「假購物車」：用瀏覽器本機儲存記住買了什麼，結帳只顯示「訂單完成」</li>
-        <li>用 Netlify 拖曳上線，互相逛同學的島</li>
+        <li><span class="zh">寫自己的 CLAUDE.md 班規</span><span class="en">Write your own CLAUDE.md class rules</span></li>
+        <li><span class="zh">請 AI 規劃小島和檔案分工</span><span class="en">Ask AI to plan the island and the files</span></li>
+        <li><span class="zh">做出地形、建築、可旋轉的鏡頭</span><span class="en">Build the land, the buildings, and a camera you can turn</span></li>
+        <li><span class="zh">建立 JSON 商品資料，點建築跳出圖卡</span><span class="en">Make a JSON product file. Tap a building to show a card.</span></li>
+        <li><span class="zh">加「假購物車」：用瀏覽器本機儲存記住買了什麼，結帳只顯示「訂單完成」</span><span class="en">Add a pretend cart. The browser remembers what you bought, and checkout just says “Order complete.”</span></li>
+        <li><span class="zh">用 Netlify 拖曳上線，互相逛同學的島</span><span class="en">Go live with Netlify drag and drop, then visit your classmates' islands</span></li>
       </ol>
-      <p class="note">需要瀏覽器、Python 和 AI 工具；雲端帳號只要 Netlify 一個。</p>
+      <p class="note"><span class="zh">需要瀏覽器、Python 和 AI 工具；雲端帳號只要 Netlify 一個。</span><span class="en">You need a browser, Python, and an AI tool. Only one online account: Netlify.</span></p>
     </div>
     <div class="track">
-      <h3><span class="lvl adv">進階班</span> 真的能下單的店</h3>
+      <h3><span class="lvl adv"><span class="zh">進階班</span><span class="en-i">Advanced</span></span><span class="zh">真的能下單的店</span><span class="en">A shop with real orders</span></h3>
       <ol>
-        <li>從範本商店開始，改成自己的店名與商品</li>
-        <li>連上 Neon 資料庫，跑 <code class="inl">npm run db:setup</code></li>
-        <li>看懂圖三：為什麼錢要在後端算</li>
-        <li>用 PRD → SDD → TASKS 的方式加一個功能（例如優惠碼）</li>
-        <li>寫檢查腳本，確認不會超賣</li>
-        <li>部署到 Vercel，和基礎班的小島互連</li>
+        <li><span class="zh">從範本商店開始，改成自己的店名與商品</span><span class="en">Start from the shop template. Change the name and the products.</span></li>
+        <li><span class="zh">連上 Neon 資料庫，跑 <code class="inl">npm run db:setup</code></span><span class="en">Connect to the Neon database and run npm run db:setup</span></li>
+        <li><span class="zh">看懂圖三：為什麼錢要在後端算</span><span class="en">Understand Diagram 3: why money is calculated on the server</span></li>
+        <li><span class="zh">用 PRD → SDD → TASKS 的方式加一個功能（例如優惠碼）</span><span class="en">Add one feature with PRD → SDD → TASKS (for example, coupons)</span></li>
+        <li><span class="zh">寫檢查腳本，確認不會超賣</span><span class="en">Write a check script to make sure you never sell more than you have</span></li>
+        <li><span class="zh">部署到 Vercel，和基礎班的小島互連</span><span class="en">Put it on Vercel and link it to a basic-class island</span></li>
       </ol>
-      <p class="note">需要 Node.js、Git、GitHub、Neon、Vercel 帳號。密碼一律由學生自己填，不貼給 AI。</p>
+      <p class="note"><span class="zh">需要 Node.js、Git、GitHub、Neon、Vercel 帳號。密碼一律由學生自己填，不貼給 AI。</span><span class="en">You need Node.js, Git, and accounts on GitHub, Neon, and Vercel. Students type passwords themselves and never paste them to AI.</span></p>
     </div>
   </div>
 </section>
 
 <section id="prompts">
-  <div class="eyebrow">提示詞範本</div>
+  <div class="eyebrow"><span class="zh">提示詞範本</span><span class="en-i">Prompt templates</span></div>
   <div class="head-row">
-    <h2>每一步怎麼對 AI 說</h2>
-    <div class="deck-ctrl"><button type="button" data-all="open">全部翻開</button><button type="button" data-all="close">全部蓋回</button></div>
+    <h2><span class="zh">每一步怎麼對 AI 說</span><span class="en">What to say to AI at each step</span></h2>
+    <div class="deck-ctrl"><button type="button" data-all="open"><span class="zh">全部翻開</span><span class="en-i">Open all</span></button><button type="button" data-all="close"><span class="zh">全部蓋回</span><span class="en-i">Close all</span></button></div>
   </div>
-  <p class="prose">正面是這一步要做的事，先讓學生自己寫一句提示詞，再翻面對照範本。好的提示詞有三個部分：要做什麼、限制是什麼、做完要怎麼回報。</p>
+  <p class="prose"><span class="zh">正面是這一步要做的事，先讓學生自己寫一句提示詞，再翻面對照範本。好的提示詞有三個部分：要做什麼、限制是什麼、做完要怎麼回報。</span><span class="en">The front shows the task for this step. Let students write their own prompt first, then flip to compare with the template. A good prompt has three parts: what to do, the limits, and how to report back.</span></p>
   <div class="prompts">
 
     <div class="flip pr"><div class="flip-inner">
-      <div class="face front"><div class="num">①</div><div class="pr-head"><h3>先定規矩</h3><span class="lvl all">最重要</span></div><p class="pr-why">規矩寫在檔案裡，AI 每次都會讀，不用每次重講。</p><p class="pr-think">先想想：你希望 AI 遵守哪四條規矩？</p><button class="flip-btn" type="button">翻面看範本</button></div>
-      <div class="face back"><span class="back-title">① 先定規矩・範本</span><div class="code"><button class="copy" type="button">複製</button><pre>我要做一個賣果醬的模擬商店網站，給國中生學習用。請先幫我寫一份 CLAUDE.md 工作守則：
+      <div class="face front"><div class="num">①</div><div class="pr-head"><h3><span class="zh">先定規矩</span><span class="en">Set the rules first</span></h3><span class="lvl all"><span class="zh">最重要</span><span class="en-i">Most important</span></span></div><p class="pr-why"><span class="zh">規矩寫在檔案裡，AI 每次都會讀，不用每次重講。</span><span class="en">Rules saved in a file are read by the AI every time, so you don't have to repeat them.</span></p><p class="pr-think"><span class="zh">先想想：你希望 AI 遵守哪四條規矩？</span><span class="en">Think: which four rules should the AI follow?</span></p><button class="flip-btn" type="button"><span class="zh">翻面看範本</span><span class="en-i">See the template</span></button></div>
+      <div class="face back"><span class="back-title"><span class="zh">① 先定規矩・範本</span><span class="en-i">Template</span></span>
+        <div class="code zh"><span class="code-label">中文範本</span><button class="copy" type="button">複製</button><pre>我要做一個賣果醬的模擬商店網站，給國中生學習用。請先幫我寫一份 CLAUDE.md 工作守則：
 1. 用繁體中文回答，技術名詞第一次出現要用一句話解釋
 2. 動手前先說要改哪些檔案，等我同意再做
 3. 一次只做一件事，做完告訴我要在瀏覽器點哪裡檢查
-4. 沒實際檢查過的，不可以說已經完成</pre></div><button class="flip-btn" type="button">翻回來</button></div>
+4. 沒實際檢查過的，不可以說已經完成</pre></div>
+        <div class="code en-code en"><span class="code-label">English template</span><button class="copy" type="button">Copy</button><pre>I want to build a pretend jam shop website for junior high students to learn with. First, write a CLAUDE.md file with these rules:
+1. Answer in simple English. Explain each tech word the first time you use it.
+2. Before you change anything, tell me which files you will change. Wait for my OK.
+3. Do one thing at a time. When you finish, tell me where to click in the browser to check it.
+4. Never say something is done if you haven't really checked it.</pre></div>
+        <button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
     </div></div>
 
     <div class="flip pr"><div class="flip-inner">
-      <div class="face front"><div class="num">②</div><div class="pr-head"><h3>先規劃，不寫程式</h3></div><p class="pr-why">先看計畫再決定，比做完才發現方向錯省很多時間。</p><p class="pr-think">先想想：要怎麼叫 AI「先別寫」，又要它告訴你什麼？</p><button class="flip-btn" type="button">翻面看範本</button></div>
-      <div class="face back"><span class="back-title">② 先規劃・範本</span><div class="code"><button class="copy" type="button">複製</button><pre>我想做一座 3D 小島當商店入口，島上有工坊、廣場、果園，點建築會跳出果醬介紹。
+      <div class="face front"><div class="num">②</div><div class="pr-head"><h3><span class="zh">先規劃，不寫程式</span><span class="en">Plan first, no code yet</span></h3></div><p class="pr-why"><span class="zh">先看計畫再決定，比做完才發現方向錯省很多時間。</span><span class="en">Checking the plan first saves a lot of time. Finding out you went the wrong way after building everything is much worse.</span></p><p class="pr-think"><span class="zh">先想想：要怎麼叫 AI「先別寫」，又要它告訴你什麼？</span><span class="en">Think: how do you tell AI “don't write code yet”? What should it tell you instead?</span></p><button class="flip-btn" type="button"><span class="zh">翻面看範本</span><span class="en-i">See the template</span></button></div>
+      <div class="face back"><span class="back-title"><span class="zh">② 先規劃・範本</span><span class="en-i">Template</span></span>
+        <div class="code zh"><span class="code-label">中文範本</span><button class="copy" type="button">複製</button><pre>我想做一座 3D 小島當商店入口，島上有工坊、廣場、果園，點建築會跳出果醬介紹。
 先不要寫程式。請告訴我：需要哪些技術、檔案怎麼分、要分幾步做完。
-限制：只用 HTML、CSS、JavaScript 和 Three.js，不要安裝任何套件。</pre></div><button class="flip-btn" type="button">翻回來</button></div>
+限制：只用 HTML、CSS、JavaScript 和 Three.js，不要安裝任何套件。</pre></div>
+        <div class="code en-code en"><span class="code-label">English template</span><button class="copy" type="button">Copy</button><pre>I want to make a 3D island as the entrance to my shop. The island has a workshop, a plaza, and an orchard. When you tap a building, a jam card pops up.
+Don't write any code yet. Tell me which tools I need, how to split the files, and how many steps it will take.
+Limits: use only HTML, CSS, JavaScript, and Three.js. Don't install any packages.</pre></div>
+        <button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
     </div></div>
 
     <div class="flip pr"><div class="flip-inner">
-      <div class="face front"><div class="num">③</div><div class="pr-head"><h3>資料和程式分開</h3></div><p class="pr-why">以後改商品文字只要改資料檔，不會不小心弄壞程式。</p><p class="pr-think">先想想：一款果醬需要記下哪些資料？</p><button class="flip-btn" type="button">翻面看範本</button></div>
-      <div class="face back"><span class="back-title">③ 資料和程式分開・範本</span><div class="code"><button class="copy" type="button">複製</button><pre>請建立 content/jams.json，放 6 款果醬的名稱、產地、一句介紹、代表色。
-網頁從這個檔案讀資料，之後我改文字就不用碰程式。</pre></div><button class="flip-btn" type="button">翻回來</button></div>
+      <div class="face front"><div class="num">③</div><div class="pr-head"><h3><span class="zh">資料和程式分開</span><span class="en">Keep data and code apart</span></h3></div><p class="pr-why"><span class="zh">以後改商品文字只要改資料檔，不會不小心弄壞程式。</span><span class="en">Later you only edit the data file to change the text, so you won't break the code by accident.</span></p><p class="pr-think"><span class="zh">先想想：一款果醬需要記下哪些資料？</span><span class="en">Think: what information does one jam need?</span></p><button class="flip-btn" type="button"><span class="zh">翻面看範本</span><span class="en-i">See the template</span></button></div>
+      <div class="face back"><span class="back-title"><span class="zh">③ 資料和程式分開・範本</span><span class="en-i">Template</span></span>
+        <div class="code zh"><span class="code-label">中文範本</span><button class="copy" type="button">複製</button><pre>請建立 content/jams.json，放 6 款果醬的名稱、產地、一句介紹、代表色。
+網頁從這個檔案讀資料，之後我改文字就不用碰程式。</pre></div>
+        <div class="code en-code en"><span class="code-label">English template</span><button class="copy" type="button">Copy</button><pre>Please create content/jams.json with 6 jams. For each jam, add its name, where it comes from, a one-line description, and a main color.
+The web page should read from this file, so I can change the text without touching the code.</pre></div>
+        <button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
     </div></div>
 
     <div class="flip pr"><div class="flip-inner">
-      <div class="face front"><div class="num">④</div><div class="pr-head"><h3>一次加一個功能</h3></div><p class="pr-why">說清楚「現在只做這件」，並要求 AI 告訴你怎麼驗收。</p><p class="pr-think">先想想：做完之後，你要 AI 告訴你什麼？</p><button class="flip-btn" type="button">翻面看範本</button></div>
-      <div class="face back"><span class="back-title">④ 一次加一個功能・範本</span><div class="code"><button class="copy" type="button">複製</button><pre>現在只做一件事：點小鍋工坊時，右邊跳出面板，顯示全部果醬圖卡。
-做完告訴我：要點哪裡、應該看到什麼。</pre></div><button class="flip-btn" type="button">翻回來</button></div>
+      <div class="face front"><div class="num">④</div><div class="pr-head"><h3><span class="zh">一次加一個功能</span><span class="en">Add one feature at a time</span></h3></div><p class="pr-why"><span class="zh">說清楚「現在只做這件」，並要求 AI 告訴你怎麼驗收。</span><span class="en">Say clearly “only this one thing now,” and ask AI how to check it.</span></p><p class="pr-think"><span class="zh">先想想：做完之後，你要 AI 告訴你什麼？</span><span class="en">Think: when it's done, what should AI tell you?</span></p><button class="flip-btn" type="button"><span class="zh">翻面看範本</span><span class="en-i">See the template</span></button></div>
+      <div class="face back"><span class="back-title"><span class="zh">④ 一次加一個功能・範本</span><span class="en-i">Template</span></span>
+        <div class="code zh"><span class="code-label">中文範本</span><button class="copy" type="button">複製</button><pre>現在只做一件事：點小鍋工坊時，右邊跳出面板，顯示全部果醬圖卡。
+做完告訴我：要點哪裡、應該看到什麼。</pre></div>
+        <div class="code en-code en"><span class="code-label">English template</span><button class="copy" type="button">Copy</button><pre>Do only one thing now: when I tap the jam workshop, a panel opens on the right and shows all the jam cards.
+When you finish, tell me where to click and what I should see.</pre></div>
+        <button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
     </div></div>
 
     <div class="flip pr"><div class="flip-inner">
-      <div class="face front"><div class="num">⑤</div><div class="pr-head"><h3>出錯時給證據</h3></div><p class="pr-why">只說「壞了」，AI 只能猜。貼上完整錯誤訊息，它才知道問題在哪。</p><p class="pr-think">先想想：除了「壞了」，還要告訴 AI 哪兩件事？</p><button class="flip-btn" type="button">翻面看範本</button></div>
-      <div class="face back"><span class="back-title">⑤ 出錯時給證據・範本</span><div class="code"><button class="copy" type="button">複製</button><pre>我點工坊沒反應。這是瀏覽器 F12 主控台的紅字：（貼上錯誤訊息）
-請先說你判斷的原因，再改。</pre></div><button class="flip-btn" type="button">翻回來</button></div>
+      <div class="face front"><div class="num">⑤</div><div class="pr-head"><h3><span class="zh">出錯時給證據</span><span class="en">Give proof when something breaks</span></h3></div><p class="pr-why"><span class="zh">只說「壞了」，AI 只能猜。貼上完整錯誤訊息，它才知道問題在哪。</span><span class="en">If you only say “it's broken,” AI has to guess. Paste the full error message so it knows where the problem is.</span></p><p class="pr-think"><span class="zh">先想想：除了「壞了」，還要告訴 AI 哪兩件事？</span><span class="en">Think: besides “it's broken,” what two things should you tell AI?</span></p><button class="flip-btn" type="button"><span class="zh">翻面看範本</span><span class="en-i">See the template</span></button></div>
+      <div class="face back"><span class="back-title"><span class="zh">⑤ 出錯時給證據・範本</span><span class="en-i">Template</span></span>
+        <div class="code zh"><span class="code-label">中文範本</span><button class="copy" type="button">複製</button><pre>我點工坊沒反應。這是瀏覽器 F12 主控台的紅字：（貼上錯誤訊息）
+請先說你判斷的原因，再改。</pre></div>
+        <div class="code en-code en"><span class="code-label">English template</span><button class="copy" type="button">Copy</button><pre>I tapped the workshop and nothing happened. Here is the red text from the browser's F12 console: (paste the error here)
+First tell me what you think the cause is. Then fix it.</pre></div>
+        <button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
     </div></div>
 
     <div class="flip pr"><div class="flip-inner">
-      <div class="face front"><div class="num">⑥</div><div class="pr-head"><h3>安全觀念</h3><span class="lvl adv">進階</span></div><p class="pr-why">搭配圖三。讓學生自己想到「如果有人改價格會怎樣」。</p><p class="pr-think">先想想：如果有人在瀏覽器把價格改成 1 元，會發生什麼事？</p><button class="flip-btn" type="button">翻面看範本</button></div>
-      <div class="face back"><span class="back-title">⑥ 安全觀念・範本</span><div class="code"><button class="copy" type="button">複製</button><pre>結帳時總金額是前端算好送到後端的，這樣安全嗎？
-如果有人在瀏覽器改成 1 元會怎樣？請用國中生聽得懂的話解釋，再改成由後端重新計算。</pre></div><button class="flip-btn" type="button">翻回來</button></div>
+      <div class="face front"><div class="num">⑥</div><div class="pr-head"><h3><span class="zh">安全觀念</span><span class="en">Think about safety</span></h3><span class="lvl adv"><span class="zh">進階</span><span class="en-i">Advanced</span></span></div><p class="pr-why"><span class="zh">搭配圖三。讓學生自己想到「如果有人改價格會怎樣」。</span><span class="en">Use this with Diagram 3. Let students work out what happens if someone changes the price.</span></p><p class="pr-think"><span class="zh">先想想：如果有人在瀏覽器把價格改成 1 元，會發生什麼事？</span><span class="en">Think: what happens if someone changes the price to NT$1 in the browser?</span></p><button class="flip-btn" type="button"><span class="zh">翻面看範本</span><span class="en-i">See the template</span></button></div>
+      <div class="face back"><span class="back-title"><span class="zh">⑥ 安全觀念・範本</span><span class="en-i">Template</span></span>
+        <div class="code zh"><span class="code-label">中文範本</span><button class="copy" type="button">複製</button><pre>結帳時總金額是前端算好送到後端的，這樣安全嗎？
+如果有人在瀏覽器改成 1 元會怎樣？請用國中生聽得懂的話解釋，再改成由後端重新計算。</pre></div>
+        <div class="code en-code en"><span class="code-label">English template</span><button class="copy" type="button">Copy</button><pre>At checkout, the total is calculated on the front end and sent to the back end. Is that safe?
+What happens if someone changes it to NT$1 in the browser? Explain it so a junior high student can understand. Then change it so the back end calculates the total again.</pre></div>
+        <button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
     </div></div>
 
     <div class="flip pr"><div class="flip-inner">
-      <div class="face front"><div class="num">⑦</div><div class="pr-head"><h3>上線</h3></div><p class="pr-why">上線前讓 AI 列檢查清單，避免把密碼一起傳上去。</p><p class="pr-think">先想想：上線前要檢查哪些東西？</p><button class="flip-btn" type="button">翻面看範本</button></div>
-      <div class="face back"><span class="back-title">⑦ 上線・範本</span><div class="code"><button class="copy" type="button">複製</button><pre>我要把這個資料夾放到 Netlify。請一步一步告訴我要點哪些按鈕，上線前要檢查什麼。</pre></div><button class="flip-btn" type="button">翻回來</button></div>
+      <div class="face front"><div class="num">⑦</div><div class="pr-head"><h3><span class="zh">上線</span><span class="en">Go live</span></h3></div><p class="pr-why"><span class="zh">上線前讓 AI 列檢查清單，避免把密碼一起傳上去。</span><span class="en">Before going live, ask AI for a checklist so you don't upload your passwords too.</span></p><p class="pr-think"><span class="zh">先想想：上線前要檢查哪些東西？</span><span class="en">Think: what should you check before going live?</span></p><button class="flip-btn" type="button"><span class="zh">翻面看範本</span><span class="en-i">See the template</span></button></div>
+      <div class="face back"><span class="back-title"><span class="zh">⑦ 上線・範本</span><span class="en-i">Template</span></span>
+        <div class="code zh"><span class="code-label">中文範本</span><button class="copy" type="button">複製</button><pre>我要把這個資料夾放到 Netlify。請一步一步告訴我要點哪些按鈕，上線前要檢查什麼。</pre></div>
+        <div class="code en-code en"><span class="code-label">English template</span><button class="copy" type="button">Copy</button><pre>I want to put this folder on Netlify. Tell me step by step which buttons to click, and what to check before it goes live.</pre></div>
+        <button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
     </div></div>
 
   </div>
 </section>
 
 <section id="order">
-  <div class="eyebrow">圖三・進階班</div>
+  <div class="eyebrow"><span class="zh">圖三・進階班</span><span class="en-i">Diagram 3 · Advanced</span></div>
   <div class="head-row">
-    <h2>下單到付款，錢在哪裡算</h2>
-    <div class="deck-ctrl"><button type="button" data-all="open">全部翻開</button><button type="button" data-all="close">全部蓋回</button></div>
+    <h2><span class="zh">下單到付款，錢在哪裡算</span><span class="en">From order to payment: where is the money calculated?</span></h2>
+    <div class="deck-ctrl"><button type="button" data-all="open"><span class="zh">全部翻開</span><span class="en-i">Open all</span></button><button type="button" data-all="close"><span class="zh">全部蓋回</span><span class="en-i">Close all</span></button></div>
   </div>
-  <p class="prose">客人的瀏覽器只送「買了哪幾樣、各幾罐」。價格、運費、折扣都由商店後端從資料庫重新算。訂單要等綠界送來付款通知，並確認簽章正確、沒處理過，才會變成「已確認」。</p>
+  <p class="prose"><span class="zh">客人的瀏覽器只送「買了哪幾樣、各幾罐」。價格、運費、折扣都由商店後端從資料庫重新算。訂單要等綠界送來付款通知，並確認簽章正確、沒處理過，才會變成「已確認」。</span><span class="en">The customer's browser only sends which items and how many jars. The shop's server looks up prices, shipping, and discounts in the database. An order becomes “confirmed” only after ECPay sends a payment notice, the signature is correct, and the notice hasn't been handled before.</span></p>
   <figure>
     <div class="svgbox wide">
-      <svg viewBox="0 0 1000 330" role="group" aria-labelledby="order-t">
-        <title id="order-t">下單付款泳道圖：客人按結帳只送商品和數量；商店後端從資料庫查價、算運費折扣並建立待付款訂單；轉到綠界付款頁；綠界送付款通知；後端檢查簽章且沒處理過才改成已確認；客人看到已付款，店家出貨到完成。每個方塊可點擊翻面看細節。</title>
+      <svg viewBox="0 0 1000 410" role="group" aria-labelledby="order-t">
+        <title id="order-t">下單付款泳道圖 Order and payment flow：客人按結帳只送商品和數量；商店後端從資料庫查價、算運費折扣並建立待付款訂單；轉到綠界付款頁；綠界送付款通知；後端檢查簽章且沒處理過才改成已確認；客人看到已付款，店家出貨到完成。</title>
         <defs>
           <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
         </defs>
-        <rect class="lane" x="0" y="0" width="1000" height="104"/>
-        <rect class="lane" x="0" y="112" width="1000" height="104"/>
-        <rect class="lane" x="0" y="224" width="1000" height="104"/>
-        <text class="lane-t" x="16" y="58">客人</text>
-        <text class="lane-t" x="16" y="162">商店</text>
-        <text class="lane-t" x="16" y="180">後端</text>
-        <text class="lane-t" x="16" y="282">綠界</text>
-        <path class="e" d="M260 60 C 300 60, 300 110, 330 122" marker-end="url(#a3)"/>
-        <path class="e" d="M440 204 C 450 250, 480 276, 518 276" marker-end="url(#a3)"/>
-        <text class="lab" x="420" y="304">轉去付款</text>
-        <path class="e" d="M630 244 L640 206" marker-end="url(#a3)"/>
-        <text class="lab" x="642" y="232">付款通知</text>
-        <path class="e" d="M720 124 C 750 80, 770 56, 798 54" marker-end="url(#a3)"/>
-        <path class="e" d="M760 164 L798 164" marker-end="url(#a3)"/>
-        <text class="lab-berry" x="80" y="100">有人改成 1 元？後端不採信</text>
+        <rect class="lane" x="0" y="0" width="1000" height="130"/>
+        <rect class="lane" x="0" y="138" width="1000" height="130"/>
+        <rect class="lane" x="0" y="276" width="1000" height="130"/>
+        <text class="lane-t svg-zh" x="14" y="62">客人</text>
+        <text class="lane-t svg-en" x="14" y="78">Customer</text>
+        <text class="lane-t svg-zh" x="14" y="192">商店</text>
+        <text class="lane-t svg-zh" x="14" y="209">後端</text>
+        <text class="lane-t svg-en" x="14" y="225">Shop</text>
+        <text class="lane-t svg-en" x="14" y="240">server</text>
+        <text class="lane-t svg-zh" x="14" y="337">綠界</text>
+        <text class="lane-t svg-en" x="14" y="353">ECPay</text>
+        <path class="e" d="M270 65 C 310 65, 310 125, 338 142" marker-end="url(#a3)"/>
+        <path class="e" d="M430 262 C 440 302, 480 341, 518 341" marker-end="url(#a3)"/>
+        <text class="lab svg-zh" x="398" y="370">轉去付款</text>
+        <text class="lab svg-en" x="398" y="385">Go to payment</text>
+        <path class="e" d="M640 296 L652 264" marker-end="url(#a3)"/>
+        <text class="lab svg-zh" x="664" y="284">付款通知</text>
+        <text class="lab svg-en" x="720" y="284">Payment notice</text>
+        <path class="e" d="M740 144 C 770 100, 780 68, 798 65" marker-end="url(#a3)"/>
+        <path class="e" d="M770 205 L798 205" marker-end="url(#a3)"/>
+        <text class="lab-berry svg-zh" x="96" y="186">有人改成 1 元？</text>
+        <text class="lab-berry svg-zh" x="96" y="203">後端不採信</text>
+        <text class="lab-berry svg-en" x="96" y="220">Price changed to NT$1?</text>
+        <text class="lab-berry svg-en" x="96" y="235">The server ignores it.</text>
 
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="按結帳">
-          <rect class="shape n" x="80" y="20" width="180" height="64" rx="12"/>
-          <g class="front"><text class="t" x="170" y="47" text-anchor="middle">按「結帳」</text><text class="s" x="170" y="68" text-anchor="middle">只送商品＋數量</text></g>
-          <g class="back"><text class="bt" x="170" y="46" text-anchor="middle">購物車只送</text><text class="bt" x="170" y="66" text-anchor="middle">商品編號和罐數</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="從資料庫查價">
-          <rect class="shape n-shop" x="290" y="124" width="200" height="80" rx="12"/>
-          <g class="front"><text class="t" x="390" y="150" text-anchor="middle">從資料庫查價</text><text class="s" x="390" y="171" text-anchor="middle">算運費、折扣、總額</text><text class="s" x="390" y="190" text-anchor="middle">建立訂單：待付款</text></g>
-          <g class="back"><text class="bt" x="390" y="148" text-anchor="middle">價格從資料庫讀出來</text><text class="bt" x="390" y="168" text-anchor="middle">滿 1,000 元免運，否則 80 元</text><text class="bt" x="390" y="188" text-anchor="middle">有優惠碼就驗碼算折扣</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="綠界付款頁">
-          <rect class="shape n" x="520" y="244" width="170" height="64" rx="12"/>
-          <g class="front"><text class="t" x="605" y="271" text-anchor="middle">綠界付款頁</text><text class="s" x="605" y="292" text-anchor="middle">用測試卡號付款</text></g>
-          <g class="back"><text class="bt" x="605" y="270" text-anchor="middle">測試卡號，不扣錢</text><text class="bt" x="605" y="290" text-anchor="middle">本機也能用指令模擬</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="收到付款通知">
-          <rect class="shape n-shop" x="560" y="124" width="200" height="80" rx="12"/>
-          <g class="front"><text class="t" x="660" y="150" text-anchor="middle">收到付款通知</text><text class="s" x="660" y="171" text-anchor="middle">檢查簽章、沒處理過</text><text class="s" x="660" y="190" text-anchor="middle">才改成：已確認</text></g>
-          <g class="back"><text class="bt" x="660" y="148" text-anchor="middle">簽章不對就不理</text><text class="bt" x="660" y="168" text-anchor="middle">同一筆通知只處理一次</text><text class="bt" x="660" y="188" text-anchor="middle">處理成功一定回「1|OK」</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="訂單頁">
-          <rect class="shape n" x="800" y="20" width="180" height="64" rx="12"/>
-          <g class="front"><text class="t" x="890" y="47" text-anchor="middle">訂單頁</text><text class="s" x="890" y="68" text-anchor="middle">看到「已付款」</text></g>
-          <g class="back"><text class="bt" x="890" y="46" text-anchor="middle">比對瀏覽器的通行碼</text><text class="bt" x="890" y="66" text-anchor="middle">只有下單本人看得到</text></g>
-        </g>
-        <g class="node" tabindex="0" role="button" aria-pressed="false" aria-label="店家後台">
-          <rect class="shape n" x="800" y="132" width="180" height="64" rx="12"/>
-          <g class="front"><text class="t" x="890" y="159" text-anchor="middle">店家後台</text><text class="s" x="890" y="180" text-anchor="middle">出貨 → 完成</text></g>
-          <g class="back"><text class="bt" x="890" y="158" text-anchor="middle">要先輸入後台密碼</text><text class="bt" x="890" y="178" text-anchor="middle">狀態只能照順序往前走</text></g>
-        </g>
+        <g class="node" data-id="o-a"><rect class="shape n" x="80" y="20" width="190" height="90" rx="12"/></g>
+        <g class="node" data-id="o-b"><rect class="shape n-shop" x="290" y="144" width="210" height="118" rx="12"/></g>
+        <g class="node" data-id="o-c"><rect class="shape n" x="520" y="296" width="180" height="90" rx="12"/></g>
+        <g class="node" data-id="o-e"><rect class="shape n-shop" x="560" y="144" width="210" height="118" rx="12"/></g>
+        <g class="node" data-id="o-f"><rect class="shape n" x="800" y="20" width="190" height="90" rx="12"/></g>
+        <g class="node" data-id="o-g"><rect class="shape n" x="800" y="160" width="190" height="90" rx="12"/></g>
       </svg>
     </div>
-    <figcaption>點方塊翻面看細節。訂單狀態只能照固定順序走：待付款 → 已確認 → 已出貨 → 已完成；待付款也可以取消。這規則寫在商店的 <code class="inl">lib/orders.ts</code>。</figcaption>
+    <figcaption><span class="zh">點方塊翻面看細節。訂單狀態只能照固定順序走：待付款 → 已確認 → 已出貨 → 已完成；待付款也可以取消。這規則寫在商店的 <code class="inl">lib/orders.ts</code>。</span><span class="en">Tap a box to see details. An order can only move in this order: waiting for payment → confirmed → shipped → completed. A waiting order can also be cancelled. This rule is in the shop's lib/orders.ts.</span></figcaption>
   </figure>
 </section>
 
 <section id="habits">
-  <div class="eyebrow">投影片收尾</div>
+  <div class="eyebrow"><span class="zh">投影片收尾</span><span class="en-i">Closing slide</span></div>
   <div class="head-row">
-    <h2>和 AI 合作的五個好習慣</h2>
-    <div class="deck-ctrl"><button type="button" data-all="open">全部翻開</button><button type="button" data-all="close">全部蓋回</button></div>
+    <h2><span class="zh">和 AI 合作的五個好習慣</span><span class="en">Five good habits for working with AI</span></h2>
+    <div class="deck-ctrl"><button type="button" data-all="open"><span class="zh">全部翻開</span><span class="en-i">Open all</span></button><button type="button" data-all="close"><span class="zh">全部蓋回</span><span class="en-i">Close all</span></button></div>
   </div>
   <div class="habits">
     <div class="flip habit"><div class="flip-inner">
-      <div class="face front"><strong>先規劃再寫</strong><button class="flip-btn" type="button">翻面</button></div>
-      <div class="face back"><strong>看過計畫才讓 AI 動手</strong><span class="ex">例：「先不要寫程式，告訴我要分幾步。」</span><button class="flip-btn" type="button">翻回來</button></div>
+      <div class="face front"><strong><span class="zh">先規劃再寫</span><span class="en">Plan before you build</span></strong><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+      <div class="face back"><strong><span class="zh">看過計畫才讓 AI 動手</span><span class="en">Let AI start only after you read the plan</span></strong><span class="ex"><span class="zh">例：「先不要寫程式，告訴我要分幾步。」</span><span class="en">e.g. “Don't write code yet. Tell me how many steps it takes.”</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
     </div></div>
     <div class="flip habit"><div class="flip-inner">
-      <div class="face front"><strong>一次一件事</strong><button class="flip-btn" type="button">翻面</button></div>
-      <div class="face back"><strong>小步做，壞了才找得到原因</strong><span class="ex">例：這間店的優惠碼拆成 3 個存檔完成。</span><button class="flip-btn" type="button">翻回來</button></div>
+      <div class="face front"><strong><span class="zh">一次一件事</span><span class="en">One thing at a time</span></strong><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+      <div class="face back"><strong><span class="zh">小步做，壞了才找得到原因</span><span class="en">Small steps make problems easy to find</span></strong><span class="ex"><span class="zh">例：這間店的優惠碼拆成 3 個存檔完成。</span><span class="en">e.g. This shop built its coupons in 3 separate saves.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
     </div></div>
     <div class="flip habit"><div class="flip-inner">
-      <div class="face front"><strong>自己點過才算完成</strong><button class="flip-btn" type="button">翻面</button></div>
-      <div class="face back"><strong>AI 說好了不等於真的好了</strong><span class="ex">例：驗收清單記下 31 項通過、1 項不通過、10 項未檢查。</span><button class="flip-btn" type="button">翻回來</button></div>
+      <div class="face front"><strong><span class="zh">自己點過才算完成</span><span class="en">It's done only after you check it</span></strong><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+      <div class="face back"><strong><span class="zh">AI 說好了不等於真的好了</span><span class="en">When AI says “done,” it may still be broken</span></strong><span class="ex"><span class="zh">例：驗收清單記下 31 項通過、1 項不通過、10 項未檢查。</span><span class="en">e.g. The test list recorded 31 passed, 1 failed, and 10 not checked yet.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
     </div></div>
     <div class="flip habit"><div class="flip-inner">
-      <div class="face front"><strong>錯誤訊息完整貼上</strong><button class="flip-btn" type="button">翻面</button></div>
-      <div class="face back"><strong>給證據，不要讓 AI 猜</strong><span class="ex">例：F12 主控台的紅字整段複製貼上。</span><button class="flip-btn" type="button">翻回來</button></div>
+      <div class="face front"><strong><span class="zh">錯誤訊息完整貼上</span><span class="en">Paste the whole error</span></strong><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+      <div class="face back"><strong><span class="zh">給證據，不要讓 AI 猜</span><span class="en">Give proof so AI doesn't have to guess</span></strong><span class="ex"><span class="zh">例：F12 主控台的紅字整段複製貼上。</span><span class="en">e.g. Copy all the red text from the F12 console.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
     </div></div>
     <div class="flip habit"><div class="flip-inner">
-      <div class="face front"><strong>密碼不給 AI、不上網</strong><button class="flip-btn" type="button">翻面</button></div>
-      <div class="face back"><strong>放在環境變數，自己填</strong><span class="ex">例：這間店設定成 AI 讀不到 <code class="inl">.env.local</code>。</span><button class="flip-btn" type="button">翻回來</button></div>
+      <div class="face front"><strong><span class="zh">密碼不給 AI、不上網</span><span class="en">Keep passwords away from AI and the internet</span></strong><button class="flip-btn" type="button"><span class="zh">翻面</span><span class="en-i">Flip</span></button></div>
+      <div class="face back"><strong><span class="zh">放在環境變數，自己填</span><span class="en">Put them in environment variables and type them yourself</span></strong><span class="ex"><span class="zh">例：這間店設定成 AI 讀不到 <code class="inl">.env.local</code>。</span><span class="en">e.g. This shop is set up so AI can't read .env.local.</span></span><button class="flip-btn" type="button"><span class="zh">翻回來</span><span class="en-i">Flip back</span></button></div>
     </div></div>
   </div>
 </section>
 
 <section id="history">
-  <div class="eyebrow">附錄・真實存檔紀錄</div>
-  <h2>這間店是照什麼順序做出來的</h2>
-  <p class="prose">從商店專案的 Git 紀錄整理。可以給學生看「一個功能被拆成幾步」。</p>
+  <div class="eyebrow"><span class="zh">附錄・真實存檔紀錄</span><span class="en-i">Appendix · Real save history</span></div>
+  <h2><span class="zh">這間店是照什麼順序做出來的</span><span class="en">The order this shop was built in</span></h2>
+  <p class="prose"><span class="zh">從商店專案的 Git 紀錄整理。可以給學生看「一個功能被拆成幾步」。</span><span class="en">From the shop's Git history. Use it to show students how one feature is split into several steps.</span></p>
   <ol class="timeline">
-    <li><time>11/04</time><div>拿課程範本開店，改成自己的店名 <code>5d1fbcb</code></div></li>
-    <li><time>11/07</time><div>優惠碼分三步做：資料表 → 後端驗碼算折扣 → 購物車輸入框 <code>000ac22・0feb856・2d8ca36</code></div></li>
-    <li><time>11/07</time><div>寫下店主規矩與門禁（CLAUDE.md、權限設定） <code>38a2c36</code></div></li>
-    <li><time>11/07</time><div>補上優惠碼 PRD、SDD、施工計畫，之後照 T00、T01、T02 逐步做 <code>09e5ac3</code></div></li>
-    <li><time>11/07</time><div>寫檢查腳本：超賣、名額退回、密碼不上 GitHub <code>a78ddf5・4a057c8・e30b3e2</code></div></li>
-    <li><time>11/07</time><div>記錄驗收結果：31 項通過、1 項不通過、10 項未檢查 <code>45fbc8a</code></div></li>
-    <li><time>11/07</time><div>另做 3D 果醬島，商店頁首加「回小島」 <code>7a846a0</code></div></li>
-    <li><time>11/08</time><div>「關於我們」故事頁、換 logo、商品圖改用 AI 示意圖並標示 <code>be2029a・bb6aedd</code></div></li>
+    <li><time>11/04</time><div><span class="zh">拿課程範本開店，改成自己的店名</span><span class="en">Started from the class template and changed the shop name</span> <code>5d1fbcb</code></div></li>
+    <li><time>11/07</time><div><span class="zh">優惠碼分三步做：資料表 → 後端驗碼算折扣 → 購物車輸入框</span><span class="en">Coupons in three steps: database table → server checks the code and discount → coupon box in the cart</span> <code>000ac22・0feb856・2d8ca36</code></div></li>
+    <li><time>11/07</time><div><span class="zh">寫下店主規矩與門禁（CLAUDE.md、權限設定）</span><span class="en">Wrote the owner's rules and limits (CLAUDE.md, permissions)</span> <code>38a2c36</code></div></li>
+    <li><time>11/07</time><div><span class="zh">補上優惠碼 PRD、SDD、施工計畫，之後照 T00、T01、T02 逐步做</span><span class="en">Added the coupon PRD, SDD, and build plan, then worked through T00, T01, T02 step by step</span> <code>09e5ac3</code></div></li>
+    <li><time>11/07</time><div><span class="zh">寫檢查腳本：超賣、名額退回、密碼不上 GitHub</span><span class="en">Wrote check scripts: no overselling, coupon limits returned, no passwords on GitHub</span> <code>a78ddf5・4a057c8・e30b3e2</code></div></li>
+    <li><time>11/07</time><div><span class="zh">記錄驗收結果：31 項通過、1 項不通過、10 項未檢查</span><span class="en">Recorded test results: 31 passed, 1 failed, 10 not checked</span> <code>45fbc8a</code></div></li>
+    <li><time>11/07</time><div><span class="zh">另做 3D 果醬島，商店頁首加「回小島」</span><span class="en">Built the 3D Jam Island and added a “Back to island” button to the shop</span> <code>7a846a0</code></div></li>
+    <li><time>11/08</time><div><span class="zh">「關於我們」故事頁、換 logo、商品圖改用 AI 示意圖並標示</span><span class="en">Added an “About us” story page, a new logo, and labeled AI photos for products</span> <code>be2029a・bb6aedd</code></div></li>
   </ol>
 </section>
 
-<footer>依據：<code class="inl">D:\my-shop</code>（商店）與 <code class="inl">D:\jam-island</code>（小島）原始碼、README 與 Git 紀錄，2026-11-08 整理。</footer>
+<footer><span class="zh">依據：<code class="inl">D:\my-shop</code>（商店）與 <code class="inl">D:\jam-island</code>（小島）原始碼、README 與 Git 紀錄，2026-11-08 整理。</span><span class="en">Sources: code, READMEs, and Git history of the shop and the island, put together on 2026-11-08.</span></footer>
 </div>
+
+<aside class="music" id="music" aria-label="背景音樂 Background music">
+  <div class="music-head">
+    <span class="music-title">♪ <span class="zh">背景音樂</span><span class="en-i">Music</span></span>
+    <button class="music-min" id="music-min" type="button" aria-expanded="true"><span class="zh">收合</span><span class="en-i">Hide</span></button>
+  </div>
+  <div class="music-video" id="music-video"></div>
+  <div class="music-row">
+    <button class="music-play" id="music-play" type="button" aria-pressed="false">▶ <span class="zh">播放</span><span class="en-i">Play</span></button>
+    <div class="music-vol">
+      <label for="music-vol"><span class="zh">音量</span><span class="en-i">Vol</span></label>
+      <input id="music-vol" type="range" min="0" max="100" step="1" value="30">
+      <output id="music-vol-out" for="music-vol">30</output>
+    </div>
+  </div>
+  <p class="music-msg" id="music-msg" hidden></p>
+  <a class="music-src" href="https://youtu.be/RckqaYYO7Zw" target="_blank" rel="noopener">α 波音樂・YouTube：GPT07 Chat</a>
+</aside>
 
 <script>
 (function () {
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement;
+  document.querySelectorAll('.en, .en-i, .svg-en').forEach(function (el) { el.setAttribute('lang', 'en'); });
+
+  /* 流程圖方塊的文字：f＝正面、b＝背面；zh 與 en 一行對一行，空字串代表那一行不需要翻譯 */
+  var NODES = {
+    cust:   { f: { zh: ['客人', '用手機或電腦'], en: ['Customer', 'On a phone or computer'] },
+              b: { zh: ['不用安裝東西', '打開網址就能逛'], en: ['Nothing to install', 'Just open the link'] } },
+    island: { f: { zh: ['3D 果醬島', 'HTML・CSS・JavaScript＋Three.js', '放在 Netlify（拖曳資料夾上線）'], en: ['3D Jam Island', '', 'On Netlify (drag the folder to go live)'] },
+              b: { zh: ['Three.js 畫出地形、建築、海', '點建築會跳出資料檔裡的圖卡', '沒有後端，不存任何訂單'], en: ['Three.js draws land, buildings, sea', 'Tap a building to open a jam card', 'No back end. No orders saved.'] } },
+    shop:   { f: { zh: ['果醬商店', 'Next.js：前台＋後台＋API', '放在 Vercel（GitHub 推上去自動部署）', '錢一律在這裡重算'], en: ['Jam Shop', 'Next.js: front end + back end + API', 'On Vercel, updates after a GitHub push', 'All prices are recalculated here'] },
+              b: { zh: ['app/ 是頁面，app/api/ 是後端', '價格、運費、折扣都從資料庫重算', '資料庫密碼只放在後端'], en: ['app/ = pages, app/api/ = back end', 'Prices are checked in the database', 'Passwords stay on the server'] } },
+    json:   { f: { zh: ['內容資料檔（JSON）', '果醬介紹、YouTube 影片'], en: ['Content files (JSON)', 'Jam info and YouTube videos'] },
+              b: { zh: ['改介紹文字不用碰程式', '價格不放這裡，以商店為準'], en: ['Edit text without touching code', 'Prices live in the shop, not here'] } },
+    neon:   { f: { zh: ['Neon 資料庫', '商品・訂單・優惠碼'], en: ['Neon database', 'Products, orders, coupons'] },
+              b: { zh: ['像放在網路上的大型表格', 'Git 還原救不回這裡的資料'], en: ['Like a big online spreadsheet', "Git can't undo changes here"] } },
+    ecpay:  { f: { zh: ['綠界測試付款', '模擬刷卡，不會真的扣錢'], en: ['ECPay test payment', 'Fake card payment, no real money'] },
+              b: { zh: ['通知會附簽章，防止偽造', '同一筆通知只處理一次'], en: ['Each notice has a signature', 'Each notice is handled only once'] } },
+    s1:  { f: { zh: ['① 寫規矩（CLAUDE.md）', 'AI 要遵守的班規，學生自己寫'], en: ['① Write the rules (CLAUDE.md)', 'Class rules for the AI, by students'] },
+           b: { zh: ['例：一次只做一件事；', '沒實際檢查過，不准說完成'], en: ['e.g. Do one thing at a time.', "Don't say “done” before you check."] } },
+    s2:  { f: { zh: ['② 請 AI 先規劃，不寫程式', '要哪些技術、檔案怎麼分、分幾步'], en: ['② Ask AI for a plan, no code yet', 'Tools, files, and how many steps'] },
+           b: { zh: ['看懂計畫才說「開始」', '看不懂就請 AI 再講白一點'], en: ['Say “go” only when you understand', 'If not, ask AI to explain simply'] } },
+    s3:  { f: { zh: ['③ 只做一件事', 'AI 先說要改哪些檔案，同意再動手'], en: ['③ Do just one thing', 'AI names the files, then waits for OK'] },
+           b: { zh: ['一次只改一個功能', '壞了才知道是哪一步弄壞的'], en: ['Change one feature at a time', 'So you know which step broke it'] } },
+    s4:  { f: { zh: ['④ 在預覽實際點過', '照 AI 說的點哪裡、看什麼'], en: ['④ Click through the preview', 'Follow the steps AI gave you'] },
+           b: { zh: ['照 AI 給的路徑實際點一次', '手機寬度也要看'], en: ['Really click every step', 'Check the phone size too'] } },
+    dia: { f: { zh: ['正常嗎？'], en: ['Does it work?'] },
+           b: { zh: ['畫面對嗎？', 'F12 有紅字嗎？'], en: ['Looks right?', 'Red errors in F12?'] } },
+    s5:  { f: { zh: ['⑤ commit 存檔', '寫一句話說明這次改了什麼'], en: ['⑤ Commit (save)', 'One sentence about what changed'] },
+           b: { zh: ['像遊戲存檔點，改壞可以讀檔', '例：「購物車加清空按鈕」'], en: ['A game save point you can load', 'e.g. “Add a clear-cart button”'] } },
+    s6:  { f: { zh: ['⑥ 上線', 'Netlify 或 Vercel，給同學網址'], en: ['⑥ Go live', 'Netlify or Vercel, share the link'] },
+           b: { zh: ['小島：拖曳資料夾到 Netlify', '商店：推上 GitHub，Vercel 自動更新'], en: ['Island: drag the folder to Netlify', 'Shop: push to GitHub, Vercel updates'] } },
+    err: { f: { zh: ['貼錯誤訊息', 'F12 主控台的紅字'], en: ['Paste the error', 'Red text in F12'] },
+           b: { zh: ['整段複製，別只截一半', '說清楚按了什麼'], en: ['Copy all of it', 'Say what you clicked'] } },
+    'o-a': { f: { zh: ['按「結帳」', '只送商品＋數量'], en: ['Tap “Checkout”', 'Sends items + amounts only'] },
+             b: { zh: ['購物車只送', '商品編號和罐數'], en: ['The cart only sends', 'item IDs and jar counts'] } },
+    'o-b': { f: { zh: ['從資料庫查價', '算運費、折扣、總額', '建立訂單：待付款'], en: ['Look up prices', 'Shipping, discount, total', 'New order: waiting to pay'] },
+             b: { zh: ['價格從資料庫讀出來', '滿 1,000 元免運，否則 80 元', '有優惠碼就驗碼算折扣'], en: ['Prices come from the database', 'Free over NT$1,000, else NT$80', 'Coupons are checked here'] } },
+    'o-c': { f: { zh: ['綠界付款頁', '用測試卡號付款'], en: ['ECPay payment page', 'Pay with a test card'] },
+             b: { zh: ['測試卡號，不扣錢', '本機也能用指令模擬'], en: ['Test card, no real money', 'Or fake it with a command'] } },
+    'o-e': { f: { zh: ['收到付款通知', '檢查簽章、沒處理過', '才改成：已確認'], en: ['Payment notice arrives', 'Check signature, not a repeat', 'Then mark it: confirmed'] },
+             b: { zh: ['簽章不對就不理', '同一筆通知只處理一次', '處理成功一定回「1|OK」'], en: ['Wrong signature? Ignore it.', 'Each notice is handled once', 'Always reply “1|OK” on success'] } },
+    'o-f': { f: { zh: ['訂單頁', '看到「已付款」'], en: ['Order page', 'Shows “Paid”'] },
+             b: { zh: ['比對瀏覽器的通行碼', '只有下單本人看得到'], en: ['Checks a code in the browser', 'Only the buyer can see it'] } },
+    'o-g': { f: { zh: ['店家後台', '出貨 → 完成'], en: ['Owner page', 'Ship → Complete'] },
+             b: { zh: ['要先輸入後台密碼', '狀態只能照順序往前走'], en: ['Needs the owner password', 'Status only moves forward'] } }
+  };
+  var SVGNS = 'http://www.w3.org/2000/svg';
+
+  function lang() { return root.getAttribute('data-lang') || 'both'; }
+
+  function renderNode(g) {
+    var d = NODES[g.getAttribute('data-id')];
+    if (!d) return;
+    var shape = g.querySelector('.shape');
+    var bb = shape.getBBox();
+    var cx = bb.x + bb.width / 2, cy = bb.y + bb.height / 2;
+    var mode = lang();
+    g.querySelectorAll('.front, .back').forEach(function (el) { el.remove(); });
+    ['f', 'b'].forEach(function (side) {
+      var grp = document.createElementNS(SVGNS, 'g');
+      grp.setAttribute('class', side === 'f' ? 'front' : 'back');
+      var lines = [];
+      d[side].zh.forEach(function (z, i) {
+        var e = d[side].en[i];
+        var title = side === 'f' && i === 0;
+        if (mode !== 'en' && z) lines.push({ t: z, c: title ? 't' : (side === 'f' ? 's' : 'bt'), h: title ? 20 : 17 });
+        if (mode !== 'zh' && e) lines.push({ t: e, c: title ? 't-en' : (side === 'f' ? 's-en' : 'bt-en'), h: title ? 17 : 15, en: true });
+        if (mode === 'en' && !e && z) lines.push({ t: z, c: side === 'f' ? 's-en' : 'bt-en', h: 15 });
+      });
+      var total = lines.reduce(function (s, l) { return s + l.h; }, 0);
+      var y = cy - total / 2;
+      lines.forEach(function (l) {
+        var t = document.createElementNS(SVGNS, 'text');
+        t.setAttribute('class', l.c);
+        t.setAttribute('x', cx);
+        t.setAttribute('y', (y + l.h * 0.76).toFixed(1));
+        t.setAttribute('text-anchor', 'middle');
+        if (l.en) t.setAttribute('lang', 'en');
+        t.textContent = l.t;
+        grp.appendChild(t);
+        y += l.h;
+      });
+      g.appendChild(grp);
+    });
+    g.setAttribute('tabindex', '0');
+    g.setAttribute('role', 'button');
+    g.setAttribute('aria-label', d.f.zh[0] + ' ' + d.f.en[0]);
+    if (!g.hasAttribute('aria-pressed')) g.setAttribute('aria-pressed', 'false');
+  }
+  function renderAllNodes() { document.querySelectorAll('.node').forEach(renderNode); }
+
+  /* 語言切換 */
+  function setLang(mode) {
+    if (mode === 'both') root.removeAttribute('data-lang'); else root.setAttribute('data-lang', mode);
+    document.querySelectorAll('.langs button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-lang') === mode ? 'true' : 'false'); });
+    renderAllNodes();
+    try { localStorage.setItem('lesson-lang', mode); } catch (e) {}
+  }
+  var saved = 'both';
+  try { saved = localStorage.getItem('lesson-lang') || 'both'; } catch (e) {}
+  setLang(['both', 'zh', 'en'].indexOf(saved) >= 0 ? saved : 'both');
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(renderAllNodes);
 
   /* 一般翻翻卡 */
   function setCard(card, open) {
@@ -689,7 +846,7 @@ html, body { margin: 0; }
   }
   document.querySelectorAll('.flip').forEach(function (c) { setCard(c, false); });
 
-  /* 流程圖方塊 */
+  /* 流程圖方塊翻面 */
   function setNode(node, open, animate) {
     if (node.classList.contains('flipped') === open) return;
     function swap() { node.classList.toggle('flipped', open); node.setAttribute('aria-pressed', open ? 'true' : 'false'); }
@@ -699,6 +856,8 @@ html, body { margin: 0; }
   }
 
   document.addEventListener('click', function (e) {
+    var lb = e.target.closest('.langs button');
+    if (lb) { setLang(lb.getAttribute('data-lang')); return; }
     if (e.target.closest('.copy') || e.target.closest('.code')) return;
     var node = e.target.closest('.node');
     if (node) { setNode(node, !node.classList.contains('flipped'), true); return; }
@@ -731,17 +890,95 @@ html, body { margin: 0; }
 
   /* 複製提示詞 */
   document.querySelectorAll('.copy').forEach(function (btn) {
+    var label = btn.textContent;
+    var isEn = btn.closest('.en-code');
     btn.addEventListener('click', function () {
       var pre = btn.parentElement.querySelector('pre');
       var text = pre.innerText;
-      function ok() { btn.textContent = '已複製'; btn.classList.add('done'); setTimeout(function () { btn.textContent = '複製'; btn.classList.remove('done'); }, 1600); }
+      function ok() { btn.textContent = isEn ? 'Copied' : '已複製'; btn.classList.add('done'); setTimeout(function () { btn.textContent = label; btn.classList.remove('done'); }, 1600); }
       function fallback() {
         var r = document.createRange(); r.selectNodeContents(pre);
         var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-        btn.textContent = '已選取，按 Ctrl+C';
+        btn.textContent = isEn ? 'Selected: press Ctrl+C' : '已選取，按 Ctrl+C';
       }
       try { navigator.clipboard.writeText(text).then(ok, fallback); } catch (err) { fallback(); }
     });
+  });
+
+  /* 背景音樂：按「播放」才載入 YouTube 官方播放器，瀏覽器不允許一打開網頁就出聲 */
+  var VIDEO_ID = 'RckqaYYO7Zw';
+  var music = document.getElementById('music');
+  var playBtn = document.getElementById('music-play');
+  var vol = document.getElementById('music-vol');
+  var volOut = document.getElementById('music-vol-out');
+  var msg = document.getElementById('music-msg');
+  var minBtn = document.getElementById('music-min');
+  var player = null, loading = false, playing = false;
+
+  try { var v0 = localStorage.getItem('lesson-music-vol'); if (v0 !== null && !isNaN(+v0)) { vol.value = v0; } } catch (e) {}
+  volOut.textContent = vol.value;
+
+  function setPlayUi(on) {
+    playing = on;
+    playBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    playBtn.innerHTML = on ? '❚❚ <span class="zh">暫停</span><span class="en-i" lang="en">Pause</span>' : '▶ <span class="zh">播放</span><span class="en-i" lang="en">Play</span>';
+  }
+  function showMsg(zh, en) {
+    msg.innerHTML = '<span class="zh">' + zh + '</span><span class="en" lang="en">' + en + '</span>';
+    msg.hidden = false;
+  }
+  function applyVolume() {
+    if (!player || !player.setVolume) return;
+    var v = +vol.value;
+    player.setVolume(v);
+    if (v > 0 && player.isMuted && player.isMuted()) player.unMute();
+  }
+  function createPlayer() {
+    var box = document.getElementById('music-video');
+    var holder = document.createElement('div');
+    box.appendChild(holder);
+    player = new YT.Player(holder, {
+      host: 'https://www.youtube-nocookie.com',
+      videoId: VIDEO_ID,
+      width: 160, height: 90,
+      playerVars: { autoplay: 1, loop: 1, playlist: VIDEO_ID, playsinline: 1, rel: 0, modestbranding: 1 },
+      events: {
+        onReady: function (e) { applyVolume(); e.target.playVideo(); },
+        onStateChange: function (e) { if (e.data === 1) setPlayUi(true); else if (e.data === 2 || e.data === 0) setPlayUi(false); },
+        onError: function () { showMsg('這支影片目前無法播放，請按下方連結到 YouTube 聽。', 'This video can\'t play here. Use the link below to listen on YouTube.'); setPlayUi(false); }
+      }
+    });
+  }
+  function loadApi() {
+    if (window.YT && window.YT.Player) { createPlayer(); return; }
+    if (loading) return;
+    loading = true;
+    playBtn.disabled = true;
+    var prev = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = function () { if (prev) prev(); playBtn.disabled = false; createPlayer(); };
+    var s = document.createElement('script');
+    s.src = 'https://www.youtube.com/iframe_api';
+    s.onerror = function () {
+      loading = false; playBtn.disabled = false;
+      showMsg('這裡無法載入 YouTube 播放器，請按下方連結到 YouTube 聽。', 'The YouTube player can\'t load here. Use the link below to listen on YouTube.');
+    };
+    document.head.appendChild(s);
+  }
+  playBtn.addEventListener('click', function () {
+    if (!player) { loadApi(); return; }
+    if (playing) player.pauseVideo(); else { applyVolume(); player.playVideo(); }
+  });
+  vol.addEventListener('input', function () {
+    volOut.textContent = vol.value;
+    applyVolume();
+    try { localStorage.setItem('lesson-music-vol', vol.value); } catch (e) {}
+  });
+  minBtn.addEventListener('click', function () {
+    var min = !music.classList.contains('min');
+    if (min && player && playing) player.pauseVideo();
+    music.classList.toggle('min', min);
+    minBtn.setAttribute('aria-expanded', min ? 'false' : 'true');
+    minBtn.innerHTML = min ? '♪ <span class="zh">音樂</span><span class="en-i" lang="en">Music</span>' : '<span class="zh">收合</span><span class="en-i" lang="en">Hide</span>';
   });
 })();
 </script>
